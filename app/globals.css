@@ -1,0 +1,224 @@
+@import "tailwindcss";
+
+:root {
+  --background: oklch(0.985 0.005 240);
+  --foreground: oklch(0.18 0.04 250);
+  --card: #ffffff;
+  --card-foreground: oklch(0.18 0.04 250);
+  --popover: #ffffff;
+  --popover-foreground: oklch(0.18 0.04 250);
+  --primary: oklch(0.48 0.19 250); /* Vibrant deep indigo/blue */
+  --primary-foreground: #ffffff;
+  --secondary: oklch(0.95 0.01 250);
+  --secondary-foreground: oklch(0.18 0.04 250);
+  --muted: oklch(0.95 0.01 250);
+  --muted-foreground: oklch(0.5 0.03 250);
+  --accent: oklch(0.95 0.01 250);
+  --accent-foreground: oklch(0.18 0.04 250);
+  --destructive: oklch(0.60 0.20 25);
+  --destructive-foreground: #ffffff;
+  --success: oklch(0.68 0.17 145); /* Balanced energetic green */
+  --success-foreground: #ffffff;
+  --warning: oklch(0.78 0.16 75);
+  --warning-foreground: oklch(0.18 0.04 250);
+  --border: oklch(0.92 0.01 250);
+  --input: oklch(0.92 0.01 250);
+  --ring: oklch(0.48 0.19 250);
+  --radius: 0.85rem;
+
+  --sidebar-background: oklch(0.20 0.04 250); /* Sleeker sidebar deep shade */
+  --sidebar-foreground: oklch(0.92 0.01 250);
+  --sidebar-accent: oklch(0.26 0.05 250);
+  --sidebar-accent-foreground: #ffffff;
+}
+
+html.dark {
+  --background: oklch(0.12 0.015 240); /* Premium dark slate background */
+  --foreground: oklch(0.94 0.005 240);
+  --card: oklch(0.16 0.02 240); /* Beautiful clean card grey */
+  --card-foreground: oklch(0.94 0.005 240);
+  --popover: oklch(0.16 0.02 240);
+  --popover-foreground: oklch(0.94 0.005 240);
+  --primary: oklch(0.72 0.14 240); /* Energetic cyan-blue primary for dark */
+  --primary-foreground: oklch(0.12 0.015 240);
+  --secondary: oklch(0.22 0.02 240);
+  --secondary-foreground: oklch(0.94 0.005 240);
+  --muted: oklch(0.20 0.02 240);
+  --muted-foreground: oklch(0.65 0.01 240);
+  --accent: oklch(0.22 0.02 240);
+  --accent-foreground: oklch(0.95 0.005 240);
+  --destructive: oklch(0.62 0.18 25);
+  --destructive-foreground: #ffffff;
+  --success: oklch(0.70 0.15 145);
+  --success-foreground: oklch(0.12 0.015 240);
+  --warning: oklch(0.76 0.13 75);
+  --warning-foreground: oklch(0.12 0.015 240);
+  --border: oklch(0.20 0.02 240);
+  --input: oklch(0.20 0.02 240);
+  --ring: oklch(0.72 0.14 240);
+
+  --sidebar-background: oklch(0.09 0.015 240); /* True pitch-dark sidebar */
+  --sidebar-foreground: oklch(0.85 0.01 240);
+  --sidebar-accent: oklch(0.15 0.02 240);
+  --sidebar-accent-foreground: #ffffff;
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+  
+  --color-sidebar-bg: var(--sidebar-background);
+  --color-sidebar-fg: var(--sidebar-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-fg: var(--sidebar-accent-foreground);
+
+  /* Animations */
+  --animate-fade-in-up: fadeInUp 0.6s ease-out;
+  --animate-fade-in: fadeIn 0.4s ease-out;
+  --animate-pulse-glow: pulseGlow 2.5s infinite;
+  --animate-float-bubble: floatBubble 6s infinite ease-in-out;
+  --animate-progress-fill: progressFill 2.5s linear forwards;
+}
+
+/* Custom Keyframes */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(34, 197, 94, 0.2), 0 0 10px rgba(34, 197, 94, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 12px rgba(34, 197, 94, 0.5), 0 0 20px rgba(34, 197, 94, 0.25);
+  }
+}
+
+@keyframes floatBubble {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-10px) scale(1.03);
+  }
+}
+
+@keyframes progressFill {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* Base Body Styles */
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), sans-serif;
+  overflow-x: hidden;
+}
+
+/* Theme Switching Smooth Transition */
+body, header, aside, main, .bg-card, .bg-white, button, input, select, textarea, div, svg {
+  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+              border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+              color 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+              box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark Mode Overrides for Hardcoded Light Colors */
+html.dark .bg-white {
+  background-color: var(--card) !important;
+}
+
+html.dark .bg-gray-50,
+html.dark .bg-slate-50 {
+  background-color: var(--background) !important;
+}
+
+html.dark .text-gray-900,
+html.dark .text-slate-900,
+html.dark .text-neutral-900 {
+  color: var(--foreground) !important;
+}
+
+html.dark .text-gray-700,
+html.dark .text-slate-700,
+html.dark .text-neutral-700,
+html.dark .text-gray-800,
+html.dark .text-slate-800 {
+  color: oklch(0.85 0.005 240) !important;
+}
+
+html.dark .text-gray-500,
+html.dark .text-slate-500,
+html.dark .text-neutral-500,
+html.dark .text-gray-600,
+html.dark .text-slate-600 {
+  color: var(--muted-foreground) !important;
+}
+
+html.dark .border-gray-100,
+html.dark .border-gray-200,
+html.dark .border-slate-100,
+html.dark .border-slate-200 {
+  border-color: var(--border) !important;
+}
+
+html.dark .divide-gray-100,
+html.dark .divide-gray-200 {
+  border-color: var(--border) !important;
+}
+
+html.dark input::placeholder {
+  color: oklch(0.5 0.01 240) !important;
+}
+
+/* Indian Currency grouping formatting layout utility */
+.currency-in::before {
+  content: "₹";
+  margin-right: 2px;
+}

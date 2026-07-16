@@ -25,17 +25,25 @@ export async function getServerTokens() {
 }
 
 export async function setServerTokens(access: string, refresh: string, user: User) {
-  const cookieStore = await cookies();
-  cookieStore.set('fittrack:accessToken', access, { path: '/', maxAge: 15 * 60, sameSite: 'lax' });
-  cookieStore.set('fittrack:refreshToken', refresh, { path: '/', maxAge: 7 * 24 * 60 * 60, sameSite: 'lax' });
-  cookieStore.set('fittrack:user', JSON.stringify(user), { path: '/', maxAge: 7 * 24 * 60 * 60, sameSite: 'lax' });
+  try {
+    const cookieStore = await cookies();
+    cookieStore.set('fittrack:accessToken', access, { path: '/', maxAge: 15 * 60, sameSite: 'lax' });
+    cookieStore.set('fittrack:refreshToken', refresh, { path: '/', maxAge: 7 * 24 * 60 * 60, sameSite: 'lax' });
+    cookieStore.set('fittrack:user', JSON.stringify(user), { path: '/', maxAge: 7 * 24 * 60 * 60, sameSite: 'lax' });
+  } catch (e) {
+    // Ignore errors when called in Server Components (where cookies cannot be set)
+  }
 }
 
 export async function clearServerTokens() {
-  const cookieStore = await cookies();
-  cookieStore.delete('fittrack:accessToken');
-  cookieStore.delete('fittrack:refreshToken');
-  cookieStore.delete('fittrack:user');
+  try {
+    const cookieStore = await cookies();
+    cookieStore.delete('fittrack:accessToken');
+    cookieStore.delete('fittrack:refreshToken');
+    cookieStore.delete('fittrack:user');
+  } catch (e) {
+    // Ignore errors when called in Server Components
+  }
 }
 
 export async function isServerAuthenticated(): Promise<boolean> {

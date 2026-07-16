@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { 
   ArrowLeft, Phone, Mail, Calendar, MapPin, Key, ShieldCheck, 
   ShieldAlert, Edit3, Plus, MessageSquare, 
-  CheckCircle, X, Loader2, Landmark, CreditCard, DollarSign, ArrowUpRight
+  CheckCircle, X, Loader2, Landmark, CreditCard, DollarSign, ArrowUpRight, AlertCircle
 } from 'lucide-react';
 import { buildWaLink } from '@/lib/utils/wa';
 import { 
@@ -277,17 +277,33 @@ export default function MemberDetailClient({ memberId, detail, plans }: MemberDe
         <div className="space-y-6">
           {/* Profile Card */}
           <div className="bg-white border rounded-2xl p-6 shadow-sm space-y-4">
-            <div className="flex items-center gap-4">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-xl select-none">
-                {(member.fullName || '?').substring(0, 2).toUpperCase()}
+            <div className="flex items-center gap-3">
+              <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold text-2xl">
+                {member?.fullName?.substring(0, 2).toUpperCase()}
               </div>
               <div>
-                <h3 className="text-md font-bold text-foreground">{member.fullName}</h3>
-                <span className={`inline-flex px-2 py-0.5 rounded-full text-[9px] font-bold uppercase mt-1 ${
-                  member.accessStatus === 'allowed' ? 'bg-success/15 text-success' : 'bg-destructive/15 text-destructive'
-                }`}>
-                  {member.accessStatus}
-                </span>
+                <h1 className="text-2xl font-bold text-foreground">{member?.fullName}</h1>
+                <div className="flex items-center gap-2 mt-1">
+                  {detail?.activeFeeSummary && (() => {
+                    const latestMs = detail.memberships?.find((m: any) => m.id === detail.activeFeeSummary.activeMembershipId);
+                    const today = new Date().toISOString().split('T')[0];
+                    const isActive = latestMs && latestMs.startDate <= today && latestMs.endDate >= today && latestMs.paymentStatus !== 'unpaid';
+                    return isActive ? (
+                      <span className="inline-flex items-center gap-1 text-xs font-bold text-success bg-success/15 px-2 py-0.5 rounded-full uppercase">
+                        <CheckCircle className="h-3 w-3" /> Active Plan
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-xs font-bold text-destructive bg-destructive/15 px-2 py-0.5 rounded-full uppercase">
+                        <AlertCircle className="h-3 w-3" /> No Active Plan
+                      </span>
+                    );
+                  })()}
+                  {!detail?.activeFeeSummary && (
+                    <span className="inline-flex items-center gap-1 text-xs font-bold text-muted-foreground bg-muted px-2 py-0.5 rounded-full uppercase">
+                      <AlertCircle className="h-3 w-3" /> No Plan
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 

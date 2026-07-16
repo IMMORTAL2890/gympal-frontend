@@ -17,7 +17,12 @@ export default async function MembersPage({ searchParams }: PageProps) {
   const dues = params.dues === '1';
 
   const duesParam = dues ? '&dues=1' : '';
-  const members = await serverApiClient(`/members?query=${encodeURIComponent(query)}&status=${status}${duesParam}`);
+  let members = [];
+  try {
+    members = await serverApiClient(`/members?query=${encodeURIComponent(query)}&status=${status}${duesParam}`);
+  } catch (error) {
+    console.error("Members fetch error:", error);
+  }
 
   return (
     <MembersListClient

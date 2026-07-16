@@ -25,7 +25,12 @@ export default async function TransactionsPage({ searchParams }: PageProps) {
   const mode = params.mode || '';
 
   const modeParam = mode ? `&mode=${mode}` : '';
-  const transactions = await serverApiClient(`/transactions?from=${from}&to=${to}${modeParam}`);
+  let transactions = [];
+  try {
+    transactions = await serverApiClient(`/transactions?from=${from}&to=${to}${modeParam}`);
+  } catch (error) {
+    console.error("Transactions fetch error:", error);
+  }
 
   return (
     <TransactionsClient

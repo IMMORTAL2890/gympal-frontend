@@ -26,8 +26,8 @@ export default function AddMemberPage() {
       toast.error('Name and mobile number are required');
       return;
     }
-    if (!mobileNumber.match(/^[0-9+\-\s]{7,15}$/)) {
-      toast.error('Mobile number must be between 7 and 15 digits');
+    if (!mobileNumber.match(/^[0-9]{10}$/)) {
+      toast.error('Mobile number must be exactly 10 digits');
       return;
     }
 
@@ -46,7 +46,7 @@ export default function AddMemberPage() {
     try {
       const data = await registerMemberAction(payload);
       toast.success('Member added successfully!');
-      router.push(`/members/${data.id}`);
+      router.replace(`/members/${data.id}`);
     } catch (err: any) {
       toast.error(err.message || 'Failed to add member. Please try again.');
     } finally {

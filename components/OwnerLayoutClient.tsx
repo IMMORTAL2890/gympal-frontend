@@ -158,7 +158,7 @@ export default function OwnerLayoutClient({ initialMe, initialAlerts, children }
   const handleSignOut = () => {
     clearTokens();
     toast.success('Logged out successfully');
-    router.push('/auth');
+    router.replace('/auth');
   };
 
   const toggleSidebar = () => {

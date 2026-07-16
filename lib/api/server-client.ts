@@ -46,8 +46,14 @@ export async function serverApiClient(endpoint: string, options: FetchOptions = 
         await setServerTokens(data.accessToken, data.refreshToken, data.user);
         
         // Retry original request with new token
-        headers['Authorization'] = `Bearer ${data.accessToken}`;
-        response = await fetch(url, config);
+        const newConfig = {
+          ...config,
+          headers: {
+            ...headers,
+            Authorization: `Bearer ${data.accessToken}`,
+          },
+        };
+        response = await fetch(url, newConfig);
       } else {
         await clearServerTokens();
         throw new Error('Session expired');

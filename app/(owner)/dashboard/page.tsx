@@ -25,7 +25,12 @@ export default async function DashboardPage({ searchParams }: PageProps) {
   const to = params.to || formatDateString(lastDayOfMonth);
   const filterType = (params.type as 'month' | 'year' | 'custom') || 'month';
 
-  const stats = await serverApiClient(`/dashboard/stats?from=${from}&to=${to}`);
+  let stats = null;
+  try {
+    stats = await serverApiClient(`/dashboard/stats?from=${from}&to=${to}`);
+  } catch (error) {
+    console.error("Dashboard fetch error:", error);
+  }
 
   return (
     <DashboardClient 

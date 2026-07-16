@@ -12,7 +12,12 @@ export default async function AttendancePage({ searchParams }: PageProps) {
   const params = await searchParams;
   const date = params.date || new Date().toISOString().split('T')[0];
 
-  const attendance = await serverApiClient(`/attendance?date=${date}`);
+  let attendance = [];
+  try {
+    attendance = await serverApiClient(`/attendance?date=${date}`);
+  } catch (error) {
+    console.error("Attendance fetch error:", error);
+  }
 
   return (
     <AttendanceClient initialAttendance={attendance || []} date={date} />

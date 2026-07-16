@@ -50,21 +50,36 @@ export default function OpsRevenueClient({ initialRevenue }: OpsRevenueClientPro
     router.push('/ops-7f3k/login');
   };
 
-  const handleExport = () => {
-    const params = new URLSearchParams();
-    if (startDate) params.append('start', startDate);
-    if (endDate) params.append('end', endDate);
-    
-    const token = localStorage.getItem('accessToken');
-    const url = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8081/api/v1'}/admin/revenue/export?${params.toString()}`;
-    
-    // Trigger download
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', 'revenue-report.csv');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleExport = async () => {
+    try {
+      const params = new URLSearchParams();
+      if (startDate) params.append('start', startDate);
+      if (endDate) params.append('end', endDate);
+      
+      const { getAccessToken } = await import('@/lib/auth/auth-store');
+      const token = getAccessToken();
+      const url = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8081/api/v1'}/admin/revenue/export?${params.toString()}`;
+      
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) throw new Error('Export failed');
+      
+      const blob = await response.blob();
+      const objectUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = objectUrl;
+      link.setAttribute('download', 'revenue-report.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(objectUrl);
+    } catch (err: any) {
+      toast.error('Failed to export revenue data');
+    }
   };
 
   const formatCurrency = (val: number) => {

@@ -172,6 +172,8 @@ export default function MembersListClient({
                               ? 'text-warning' 
                               : m.status === 'expired' 
                               ? 'text-destructive' 
+                              : m.status === 'inactive'
+                              ? 'text-muted-foreground'
                               : 'text-success'
                           }`}>
                             {m.status.toUpperCase()}

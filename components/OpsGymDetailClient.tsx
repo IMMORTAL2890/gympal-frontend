@@ -20,8 +20,8 @@ export default function OpsGymDetailClient({ gymDetail: initialDetail }: OpsGymD
   const [gymDetail, setGymDetail] = useState(initialDetail);
   
   // Gym level states
-  const [status, setStatus] = useState(initialDetail.status || 'active');
-  const [subscriptionPlan, setSubscriptionPlan] = useState(initialDetail.subscriptionPlan || 'BASIC');
+  const [status, setStatus] = useState(initialDetail?.status || 'active');
+  const [subscriptionPlan, setSubscriptionPlan] = useState(initialDetail?.subscriptionPlan || 'BASIC');
   const [savingGym, setSavingGym] = useState(false);
 
   // Features list state
@@ -46,10 +46,10 @@ export default function OpsGymDetailClient({ gymDetail: initialDetail }: OpsGymD
   };
 
   useEffect(() => {
-    if (activeTab === 'features') {
+    if (activeTab === 'features' && gymDetail?.gymId) {
       fetchFeaturesAndLogs();
     }
-  }, [activeTab]);
+  }, [activeTab, gymDetail?.gymId]);
 
   const handleSaveGymSettings = async () => {
     setSavingGym(true);
@@ -99,6 +99,8 @@ export default function OpsGymDetailClient({ gymDetail: initialDetail }: OpsGymD
       setApplyingPreset(false);
     }
   };
+
+  if (!gymDetail) return null;
 
   const formatCurrency = (val: number) => {
     return '₹' + new Intl.NumberFormat('en-IN').format(val);

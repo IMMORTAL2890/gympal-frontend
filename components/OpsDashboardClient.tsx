@@ -22,7 +22,7 @@ export default function OpsDashboardClient({ initialGyms, dashboardStats }: OpsD
   const handleLogout = () => {
     clearTokens();
     toast.success('Admin logged out');
-    router.push('/ops-7f3k/login');
+    router.replace('/ops-7f3k/login');
   };
 
   const formatCurrency = (val: number) => {

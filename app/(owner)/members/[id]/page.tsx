@@ -12,8 +12,14 @@ export default async function MemberDetailPage({ params }: PageProps) {
   const resolvedParams = await params;
   const id = resolvedParams.id;
 
-  const detail = await serverApiClient(`/members/${id}`);
-  const plans = await serverApiClient('/plans');
+  let detail = null;
+  let plans = [];
+  try {
+    detail = await serverApiClient(`/members/${id}`);
+    plans = await serverApiClient('/plans');
+  } catch (error) {
+    console.error("Member detail fetch error:", error);
+  }
 
   return (
     <MemberDetailClient 

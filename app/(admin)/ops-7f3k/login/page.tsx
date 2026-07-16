@@ -36,7 +36,7 @@ export default function AdminLoginPage() {
 
       setTokens(data.accessToken, data.refreshToken, data.user);
       toast.success('Access granted. Welcome to Ops Portal!');
-      router.push('/ops-7f3k');
+      router.replace('/ops-7f3k');
     } catch (err: any) {
       toast.error(err.message || 'Invalid credentials');
     } finally {

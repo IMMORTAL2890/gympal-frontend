@@ -20,8 +20,12 @@ export default async function OwnerLayout({ children }: { children: React.ReactN
     if (meData?.gym) {
       alertsData = await serverApiClient('/alerts');
     }
-  } catch (error) {
-    shouldRedirect = true;
+  } catch (error: any) {
+    if (error?.message === 'Session expired' || error?.status === 401 || error?.status === 403) {
+      shouldRedirect = true;
+    } else {
+      console.error("Layout fetch error:", error);
+    }
   }
 
   if (shouldRedirect) {

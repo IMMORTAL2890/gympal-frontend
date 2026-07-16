@@ -3,7 +3,12 @@ import { serverApiClient } from '@/lib/api/server-client';
 import AlertsClient from '@/components/AlertsClient';
 
 export default async function AlertsPage() {
-  const alerts = await serverApiClient('/alerts');
+  let alerts = [];
+  try {
+    alerts = await serverApiClient('/alerts');
+  } catch (error) {
+    console.error("Alerts fetch error:", error);
+  }
 
   return (
     <AlertsClient initialAlerts={alerts || []} />

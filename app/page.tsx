@@ -14,7 +14,7 @@ export default function SplashPage() {
     // Check if access token is available in local storage
     const token = getAccessToken();
     if (!token) {
-      router.push('/auth');
+      router.replace('/auth');
       return;
     }
 
@@ -22,10 +22,10 @@ export default function SplashPage() {
       setLoadingText('Verifying session...');
       // Validate session against backend
       await apiClient('/me');
-      router.push('/dashboard');
+      router.replace('/dashboard');
     } catch (error) {
       setLoadingText('Session expired. Redirecting to login...');
-      router.push('/auth');
+      router.replace('/auth');
     }
   };
 

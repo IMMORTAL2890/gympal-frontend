@@ -35,7 +35,7 @@ export default function AuthPage() {
       });
       setTokens(data.accessToken, data.refreshToken, data.user);
       toast.success(isLogin ? 'Welcome back!' : 'Account created successfully!');
-      router.push('/dashboard');
+      router.replace('/dashboard');
     } catch (err: any) {
       toast.error(err.message || 'Authentication failed');
     } finally {
@@ -50,11 +50,11 @@ export default function AuthPage() {
       const mockEmail = email || 'google-demo-user@gympal.com';
       const data = await apiClient('/auth/oauth/google', {
         method: 'POST',
-        body: JSON.stringify({ idToken: mockEmail }),
+        body: JSON.stringify({ idToken: 'MOCK_TOKEN:' + mockEmail }),
       });
       setTokens(data.accessToken, data.refreshToken, data.user);
       toast.success('Signed in with Google!');
-      router.push('/dashboard');
+      router.replace('/dashboard');
     } catch (err: any) {
       toast.error(err.message || 'Google OAuth failed');
     } finally {

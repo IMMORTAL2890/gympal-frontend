@@ -85,8 +85,14 @@ export async function apiClient(endpoint: string, options: FetchOptions = {}): P
       });
     });
 
-    headers['Authorization'] = `Bearer ${newAccessToken}`;
-    response = await fetch(url, config);
+    const newConfig = {
+      ...config,
+      headers: {
+        ...headers,
+        Authorization: `Bearer ${newAccessToken}`,
+      },
+    };
+    response = await fetch(url, newConfig);
   }
 
   if (response.status === 204) {

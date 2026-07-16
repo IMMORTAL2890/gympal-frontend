@@ -165,9 +165,16 @@ export default function MemberDetailClient({ memberId, detail, plans }: MemberDe
   const handlePaymentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!payAmount) return;
+    
+    const membershipId = detail?.activeFeeSummary?.activeMembershipId;
+    if (!membershipId) {
+      toast.error('No active membership found to apply payment to.');
+      return;
+    }
+
     setLoading(true);
     try {
-      await addSubsequentPaymentAction(detail?.activeFeeSummary?.activeMembershipId, {
+      await addSubsequentPaymentAction(membershipId, {
         amount: Number(payAmount),
         mode: payMode,
         paymentDate: payDate,
@@ -272,7 +279,7 @@ export default function MemberDetailClient({ memberId, detail, plans }: MemberDe
           <div className="bg-white border rounded-2xl p-6 shadow-sm space-y-4">
             <div className="flex items-center gap-4">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-xl select-none">
-                {member.fullName.substring(0, 2).toUpperCase()}
+                {(member.fullName || '?').substring(0, 2).toUpperCase()}
               </div>
               <div>
                 <h3 className="text-md font-bold text-foreground">{member.fullName}</h3>
@@ -789,24 +796,23 @@ export default function MemberDetailClient({ memberId, detail, plans }: MemberDe
                     className="w-full rounded-xl border bg-background py-2 px-3 text-sm outline-none"
                   />
                 </div>
+                <div className="flex gap-3 justify-end border-t pt-4 mt-6">
+                  <button
+                    type="button"
+                    onClick={() => setRenewOpen(false)}
+                    className="px-4 py-2.5 rounded-xl border text-xs font-semibold hover:bg-muted cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="flex items-center gap-1.5 rounded-xl bg-primary py-2.5 px-6 text-xs font-bold text-primary-foreground hover:bg-primary/95 disabled:opacity-50 cursor-pointer"
+                  >
+                    {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Assign Membership'}
+                  </button>
+                </div>
               </form>
-            </div>
-
-            <div className="flex gap-3 justify-end border-t pt-4 mt-6">
-              <button
-                type="button"
-                onClick={() => setRenewOpen(false)}
-                className="px-4 py-2.5 rounded-xl border text-xs font-semibold hover:bg-muted cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleRenewSubmit}
-                disabled={loading}
-                className="flex items-center gap-1.5 rounded-xl bg-primary py-2.5 px-6 text-xs font-bold text-primary-foreground hover:bg-primary/95 disabled:opacity-50 cursor-pointer"
-              >
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Assign Membership'}
-              </button>
             </div>
           </div>
         </div>

@@ -16,8 +16,13 @@ export default async function OpsDashboardPage() {
   try {
     gyms = await serverApiClient('/admin/gyms');
     stats = await serverApiClient('/admin/dashboard');
-  } catch (error) {
-    shouldRedirect = true;
+  } catch (error: any) {
+    console.error("Ops dashboard fetch error:", error);
+    if (error?.status === 401 || error?.status === 403) {
+      shouldRedirect = true;
+    } else {
+      throw error; // Let AdminError boundary catch it
+    }
   }
 
   if (shouldRedirect) {

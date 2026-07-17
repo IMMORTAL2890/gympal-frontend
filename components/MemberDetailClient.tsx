@@ -58,7 +58,7 @@ export default function MemberDetailClient({ memberId, detail, plans }: MemberDe
     e.preventDefault();
     setLoading(true);
     try {
-      await editMemberAction(memberId, {
+      const result = await editMemberAction(memberId, {
         fullName: editName,
         mobileNumber: editMobile,
         email: editEmail || null,
@@ -66,6 +66,7 @@ export default function MemberDetailClient({ memberId, detail, plans }: MemberDe
         address: editAddress || null,
         biometricUid: editBiometric || null,
       });
+      if (result?.error) { toast.error(result.error); return; }
       toast.success('Profile updated successfully!');
       setEditOpen(false);
       router.refresh();
@@ -84,10 +85,11 @@ export default function MemberDetailClient({ memberId, detail, plans }: MemberDe
     e.preventDefault();
     setLoading(true);
     try {
-      await overrideMemberAccessAction(memberId, {
+      const result = await overrideMemberAccessAction(memberId, {
         action: accessAction,
         reason: accessReason || (accessAction === 'block' ? 'Manual block' : 'Manual unblock'),
       });
+      if (result?.error) { toast.error(result.error); return; }
       toast.success('Access configuration updated!');
       setAccessOpen(false);
       setAccessReason('');
@@ -131,7 +133,7 @@ export default function MemberDetailClient({ memberId, detail, plans }: MemberDe
     }
     setLoading(true);
     try {
-      await assignMembershipAction(memberId, {
+      const result = await assignMembershipAction(memberId, {
         planId: parseInt(renewPlanId, 10),
         startDate: renewStart,
         endDate: renewEnd || null,
@@ -142,6 +144,7 @@ export default function MemberDetailClient({ memberId, detail, plans }: MemberDe
         paymentMode: renewMode.toLowerCase(),
         notes: renewNotes || null,
       });
+      if (result?.error) { toast.error(result.error); return; }
       toast.success('Plan assigned successfully!');
       setRenewOpen(false);
       setRenewPlanId('');
@@ -174,12 +177,13 @@ export default function MemberDetailClient({ memberId, detail, plans }: MemberDe
 
     setLoading(true);
     try {
-      await addSubsequentPaymentAction(membershipId, {
+      const result = await addSubsequentPaymentAction(membershipId, {
         amount: Number(payAmount),
         mode: payMode,
         paymentDate: payDate,
         note: payNote || null,
       });
+      if (result?.error) { toast.error(result.error); return; }
       toast.success('Payment added successfully!');
       setPaymentOpen(false);
       setPayAmount('');

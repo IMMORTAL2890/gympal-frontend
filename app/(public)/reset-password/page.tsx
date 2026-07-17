@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Dumbbell, Mail, ArrowLeft, Send, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { apiClient } from '@/lib/api/client';
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -19,12 +20,18 @@ export default function ResetPasswordPage() {
     }
 
     setLoading(true);
-    // Simulate sending password reset email
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      await apiClient('/auth/forgot-password', {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+      });
       setSuccess(true);
       toast.success('Password reset link sent to your email!');
-    }, 1500);
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to send reset link');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

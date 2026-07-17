@@ -17,8 +17,13 @@ export default async function OpsUsersPage() {
   try {
     initialUsers = await serverApiClient('/admin/users');
     gyms = await serverApiClient('/admin/gyms');
-  } catch (error) {
-    shouldRedirect = true;
+  } catch (error: any) {
+    console.error("Ops users fetch error:", error);
+    if (error?.status === 401 || error?.status === 403) {
+      shouldRedirect = true;
+    } else {
+      throw error;
+    }
   }
 
   if (shouldRedirect) {

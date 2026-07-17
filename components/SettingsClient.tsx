@@ -38,16 +38,18 @@ export default function SettingsClient({ initialMe, initialDevices }: SettingsCl
     e.preventDefault();
     setLoading(true);
     try {
-      await updateGymProfileAction({
+      const result = await updateGymProfileAction({
         gymName,
         ownerName,
         mobile,
         autoReminderEnabled,
         reminderDaysBefore,
       });
+      if (result?.error) { toast.error(result.error); return; }
       toast.success('Gym profile updated!');
       router.refresh();
     } catch (err: any) {
+      console.error('[SettingsClient] Profile update error:', err);
       toast.error(err.message || 'Profile update failed');
     } finally {
       setLoading(false);
@@ -110,16 +112,20 @@ export default function SettingsClient({ initialMe, initialDevices }: SettingsCl
     };
 
     try {
+      let result: any;
       if (editingDevice) {
-        await updateDeviceAction(editingDevice.id, payload);
+        result = await updateDeviceAction(editingDevice.id, payload);
+        if (result?.error) { toast.error(result.error); return; }
         toast.success('Device configuration updated!');
       } else {
-        await createDeviceAction(payload);
+        result = await createDeviceAction(payload);
+        if (result?.error) { toast.error(result.error); return; }
         toast.success('Device registered!');
       }
       setDeviceModalOpen(false);
       router.refresh();
     } catch (err: any) {
+      console.error('[SettingsClient] Device action error:', err);
       toast.error(err.message || 'Action failed');
     } finally {
       setLoading(false);
@@ -129,10 +135,12 @@ export default function SettingsClient({ initialMe, initialDevices }: SettingsCl
   const handleDeleteDevice = async (id: number) => {
     if (!confirm('Are you sure you want to remove this device config?')) return;
     try {
-      await deleteDeviceAction(id);
+      const result = await deleteDeviceAction(id);
+      if (result?.error) { toast.error(result.error); return; }
       toast.success('Device removed successfully');
       router.refresh();
     } catch (err: any) {
+      console.error('[SettingsClient] Delete device error:', err);
       toast.error(err.message || 'Failed to remove device');
     }
   };

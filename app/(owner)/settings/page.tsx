@@ -10,6 +10,7 @@ export default async function SettingsPage() {
     devices = await serverApiClient('/devices');
   } catch (error) {
     console.error("Settings fetch error:", error);
+    throw error;
   }
 
   return (

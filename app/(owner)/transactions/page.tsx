@@ -30,6 +30,7 @@ export default async function TransactionsPage({ searchParams }: PageProps) {
     transactions = await serverApiClient(`/transactions?from=${from}&to=${to}${modeParam}`);
   } catch (error) {
     console.error("Transactions fetch error:", error);
+    throw error;
   }
 
   return (

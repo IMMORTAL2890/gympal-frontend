@@ -101,8 +101,32 @@ export async function apiClient(endpoint: string, options: FetchOptions = {}): P
 
   const text = await response.text();
   const data = text ? JSON.parse(text) : null;
+
+  // Check if response is wrapped in standard API envelope: { data, message, status }
+  const isEnveloped = data && typeof data === 'object' && 'status' in data && 'data' in data;
+
+  if (isEnveloped) {
+    const apiStatus = data.status;
+    const isOk = apiStatus >= 200 && apiStatus < 300;
+
+    if (!isOk) {
+      throw {
+        ...data,
+        status: apiStatus,
+        message: data.message || `Request failed with API status ${apiStatus}`,
+      };
+    }
+
+    return data.data;
+  }
+
   if (!response.ok) {
-    throw data || { message: 'An error occurred' };
+    const errorPayload = {
+      ...(data || {}),
+      status: response.status,
+      message: data?.message || data?.error || `Request failed with status ${response.status}`,
+    };
+    throw errorPayload;
   }
 
   return data;

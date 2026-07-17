@@ -8,6 +8,7 @@ export default async function PlansPage() {
     plans = await serverApiClient('/plans');
   } catch (error) {
     console.error("Plans fetch error:", error);
+    throw error;
   }
 
   return (

@@ -144,7 +144,11 @@ export default function OwnerLayoutClient({ initialMe, initialAlerts, children }
 
     setSetupLoading(true);
     try {
-      await setupGymAction({ gymName, ownerName, mobile });
+      const result = await setupGymAction({ gymName, ownerName, mobile });
+      if (result && (result as any).error) {
+        toast.error((result as any).error);
+        return;
+      }
       toast.success('Gym registered successfully!');
       setSetupOpen(false);
       router.refresh(); // Triggers server components refresh

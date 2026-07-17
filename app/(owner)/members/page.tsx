@@ -22,6 +22,7 @@ export default async function MembersPage({ searchParams }: PageProps) {
     members = await serverApiClient(`/members?query=${encodeURIComponent(query)}&status=${status}${duesParam}`);
   } catch (error) {
     console.error("Members fetch error:", error);
+    throw error;
   }
 
   return (

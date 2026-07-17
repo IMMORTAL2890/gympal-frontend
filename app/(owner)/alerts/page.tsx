@@ -8,6 +8,7 @@ export default async function AlertsPage() {
     alerts = await serverApiClient('/alerts');
   } catch (error) {
     console.error("Alerts fetch error:", error);
+    throw error;
   }
 
   return (

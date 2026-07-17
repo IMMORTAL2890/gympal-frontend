@@ -19,6 +19,7 @@ export default async function MemberDetailPage({ params }: PageProps) {
     plans = await serverApiClient('/plans');
   } catch (error) {
     console.error("Member detail fetch error:", error);
+    throw error;
   }
 
   return (

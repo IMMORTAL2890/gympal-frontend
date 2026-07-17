@@ -60,18 +60,21 @@ export default function PlansClient({ initialPlans }: PlansClientProps) {
       description: description || null,
       isActive,
     };
-
     try {
+      let result: any;
       if (editingPlan) {
-        await updatePlanAction(editingPlan.id, payload);
+        result = await updatePlanAction(editingPlan.id, payload);
+        if (result?.error) { toast.error(result.error); return; }
         toast.success('Plan updated successfully!');
       } else {
-        await createPlanAction(payload);
+        result = await createPlanAction(payload);
+        if (result?.error) { toast.error(result.error); return; }
         toast.success('Plan created successfully!');
       }
       setPlanModalOpen(false);
       router.refresh();
     } catch (err: any) {
+      console.error('[PlansClient] Action error:', err);
       toast.error(err.message || 'Action failed');
     } finally {
       setLoading(false);
@@ -80,10 +83,12 @@ export default function PlansClient({ initialPlans }: PlansClientProps) {
 
   const handleToggle = async (p: any) => {
     try {
-      await updatePlanAction(p.id, { isActive: !p.isActive });
+      const result = await updatePlanAction(p.id, { isActive: !p.isActive });
+      if (result?.error) { toast.error(result.error); return; }
       toast.success('Plan status updated!');
       router.refresh();
     } catch (err: any) {
+      console.error('[PlansClient] Toggle error:', err);
       toast.error(err.message || 'Toggle failed');
     }
   };

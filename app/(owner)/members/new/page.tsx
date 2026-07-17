@@ -45,9 +45,14 @@ export default function AddMemberPage() {
     setLoading(true);
     try {
       const data = await registerMemberAction(payload);
+      if (data?.error) {
+        toast.error(data.error);
+        return;
+      }
       toast.success('Member added successfully!');
       router.replace(`/members/${data.id}`);
     } catch (err: any) {
+      console.error('[AddMemberPage] Register error:', err);
       toast.error(err.message || 'Failed to add member. Please try again.');
     } finally {
       setLoading(false);

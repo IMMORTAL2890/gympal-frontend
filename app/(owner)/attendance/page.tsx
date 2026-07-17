@@ -17,6 +17,7 @@ export default async function AttendancePage({ searchParams }: PageProps) {
     attendance = await serverApiClient(`/attendance?date=${date}`);
   } catch (error) {
     console.error("Attendance fetch error:", error);
+    throw error;
   }
 
   return (

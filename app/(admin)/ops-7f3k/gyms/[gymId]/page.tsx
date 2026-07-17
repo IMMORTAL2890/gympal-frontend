@@ -23,8 +23,13 @@ export default async function AdminGymDetailPage({ params }: PageProps) {
   let shouldRedirect = false;
   try {
     gymDetail = await serverApiClient(`/admin/gyms/${gymId}`);
-  } catch (error) {
-    shouldRedirect = true;
+  } catch (error: any) {
+    console.error("Ops gym detail fetch error:", error);
+    if (error?.status === 401 || error?.status === 403) {
+      shouldRedirect = true;
+    } else {
+      throw error;
+    }
   }
 
   if (shouldRedirect) {

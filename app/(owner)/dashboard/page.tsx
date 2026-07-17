@@ -30,6 +30,7 @@ export default async function DashboardPage({ searchParams }: PageProps) {
     stats = await serverApiClient(`/dashboard/stats?from=${from}&to=${to}`);
   } catch (error) {
     console.error("Dashboard fetch error:", error);
+    throw error;
   }
 
   return (

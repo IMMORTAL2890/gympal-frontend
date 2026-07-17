@@ -15,8 +15,13 @@ export default async function OpsRevenuePage() {
 
   try {
     revenue = await serverApiClient('/admin/revenue');
-  } catch (error) {
-    shouldRedirect = true;
+  } catch (error: any) {
+    console.error("Ops revenue fetch error:", error);
+    if (error?.status === 401 || error?.status === 403) {
+      shouldRedirect = true;
+    } else {
+      throw error;
+    }
   }
 
   if (shouldRedirect) {

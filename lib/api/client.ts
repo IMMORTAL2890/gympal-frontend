@@ -57,6 +57,11 @@ export async function apiClient(endpoint: string, options: FetchOptions = {}): P
     const isOk = apiStatus >= 200 && apiStatus < 300;
 
     if (!isOk) {
+      // Gracefully suppress gym owner resolution errors before onboarding completes
+      if (data.message && data.message.includes('Gym owner ID not resolved')) {
+        console.warn("[apiClient] Suppressing unresolved gym owner error during onboarding. Returning null fallback.");
+        return null;
+      }
       throw {
         ...data,
         status: apiStatus,
@@ -68,6 +73,11 @@ export async function apiClient(endpoint: string, options: FetchOptions = {}): P
   }
 
   if (!response.ok) {
+    // Gracefully suppress gym owner resolution errors before onboarding completes
+    if (data?.message && data.message.includes('Gym owner ID not resolved')) {
+      console.warn("[apiClient] Suppressing unresolved gym owner error during onboarding. Returning null fallback.");
+      return null;
+    }
     const errorPayload = {
       ...(data || {}),
       status: response.status,

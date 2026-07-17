@@ -2,6 +2,8 @@ import React from 'react';
 import { serverApiClient } from '@/lib/api/server-client';
 import MemberDetailClient from '@/components/MemberDetailClient';
 
+export const dynamic = 'force-dynamic';
+
 interface PageProps {
   params: Promise<{
     id: string;

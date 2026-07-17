@@ -5,6 +5,8 @@ import { getServerTokens } from '@/lib/auth/session';
 import { serverApiClient } from '@/lib/api/server-client';
 import OwnerLayoutClient from '@/components/OwnerLayoutClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function OwnerLayout({ children }: { children: React.ReactNode }) {
   const { accessToken } = await getServerTokens();
   if (!accessToken) {

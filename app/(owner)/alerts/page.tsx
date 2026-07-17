@@ -2,6 +2,8 @@ import React from 'react';
 import { serverApiClient } from '@/lib/api/server-client';
 import AlertsClient from '@/components/AlertsClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AlertsPage() {
   let alerts = [];
   try {

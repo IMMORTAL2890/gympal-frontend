@@ -2,6 +2,8 @@ import React from 'react';
 import { serverApiClient } from '@/lib/api/server-client';
 import AttendanceClient from '@/components/AttendanceClient';
 
+export const dynamic = 'force-dynamic';
+
 interface PageProps {
   searchParams: Promise<{
     date?: string;

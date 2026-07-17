@@ -2,6 +2,8 @@ import React from 'react';
 import { serverApiClient } from '@/lib/api/server-client';
 import SettingsClient from '@/components/SettingsClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function SettingsPage() {
   let me = null;
   let devices = [];

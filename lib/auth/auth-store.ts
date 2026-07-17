@@ -24,10 +24,6 @@ export function getAccessToken(): string | null {
   return getCookie('fittrack:accessToken');
 }
 
-export function getRefreshToken(): string | null {
-  return getCookie('fittrack:refreshToken');
-}
-
 export function getUser(): User | null {
   const userStr = getCookie('fittrack:user');
   if (userStr) {
@@ -40,15 +36,14 @@ export function getUser(): User | null {
   return null;
 }
 
-export function setTokens(access: string, refresh: string, user: User) {
-  setCookie('fittrack:accessToken', access, 15 * 60);
-  setCookie('fittrack:refreshToken', refresh, 7 * 24 * 60 * 60);
+export function setTokens(access: string, user: User) {
+  // Access token cookie lives for 7 days now
+  setCookie('fittrack:accessToken', access, 7 * 24 * 60 * 60);
   setCookie('fittrack:user', JSON.stringify(user), 7 * 24 * 60 * 60);
 }
 
 export function clearTokens() {
   deleteCookie('fittrack:accessToken');
-  deleteCookie('fittrack:refreshToken');
   deleteCookie('fittrack:user');
 }
 

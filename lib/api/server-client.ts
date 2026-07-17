@@ -18,7 +18,7 @@ export async function serverApiClient(endpoint: string, options: FetchOptions = 
     ...options.headers,
   } as Record<string, string>;
 
-  const { accessToken, refreshToken } = await getServerTokens();
+  const { accessToken } = await getServerTokens();
   if (accessToken) {
     headers['Authorization'] = `Bearer ${accessToken}`;
   }
@@ -30,38 +30,13 @@ export async function serverApiClient(endpoint: string, options: FetchOptions = 
 
   let response = await fetch(url, config);
 
-  // Server-side silent JWT renewal
-  if (response.status === 401 && refreshToken) {
-    try {
-      let refreshUrl = `${baseUrl}/auth/refresh`;
-      refreshUrl = refreshUrl.replace(/([^:]\/)\/+/g, "$1");
-      const refreshRes = await fetch(refreshUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ refreshToken }),
-      });
-
-      if (refreshRes.ok) {
-        const data = await refreshRes.json();
-        await setServerTokens(data.accessToken, data.refreshToken, data.user);
-        
-        // Retry original request with new token
-        const newConfig = {
-          ...config,
-          headers: {
-            ...headers,
-            Authorization: `Bearer ${data.accessToken}`,
-          },
-        };
-        response = await fetch(url, newConfig);
-      } else {
-        await clearServerTokens();
-        throw new Error('Session expired');
-      }
-    } catch (err) {
-      await clearServerTokens();
-      throw err;
-    }
+  // If unauthorized, clear server tokens and throw Session expired
+  if (response.status === 401) {
+    await clearServerTokens();
+    throw {
+      status: 401,
+      message: 'Session expired',
+    };
   }
 
   if (response.status === 204) {

@@ -10,6 +10,17 @@ type ActionResult<T = any> = T | { error: string };
 
 function extractMessage(err: any): string {
   if (typeof err === 'string') return err;
+  
+  // Extract detailed field-level validation errors if present in the envelope's data field
+  if (err?.data && typeof err.data === 'object' && !Array.isArray(err.data)) {
+    const fieldErrors = Object.entries(err.data)
+      .map(([field, msg]) => `${field}: ${msg}`)
+      .join(', ');
+    if (fieldErrors) {
+      return `${err.message || 'Validation failed'}: ${fieldErrors}`;
+    }
+  }
+
   if (err?.message) return err.message;
   if (err?.error) return err.error;
   return 'Action failed';

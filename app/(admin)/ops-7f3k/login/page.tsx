@@ -34,7 +34,7 @@ export default function AdminLoginPage() {
         return;
       }
 
-      setTokens(data.accessToken, data.refreshToken, data.user);
+      setTokens(data.accessToken, data.user);
       toast.success('Access granted. Welcome to Ops Portal!');
       router.replace('/ops-7f3k');
     } catch (err: any) {

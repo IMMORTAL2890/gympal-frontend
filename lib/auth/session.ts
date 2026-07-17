@@ -9,7 +9,6 @@ export interface User {
 export async function getServerTokens() {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('fittrack:accessToken')?.value || null;
-  const refreshToken = cookieStore.get('fittrack:refreshToken')?.value || null;
   const userStr = cookieStore.get('fittrack:user')?.value || null;
 
   let user: User | null = null;
@@ -21,14 +20,13 @@ export async function getServerTokens() {
     }
   }
 
-  return { accessToken, refreshToken, user };
+  return { accessToken, user };
 }
 
-export async function setServerTokens(access: string, refresh: string, user: User) {
+export async function setServerTokens(access: string, user: User) {
   try {
     const cookieStore = await cookies();
-    cookieStore.set('fittrack:accessToken', access, { path: '/', maxAge: 15 * 60, sameSite: 'lax' });
-    cookieStore.set('fittrack:refreshToken', refresh, { path: '/', maxAge: 7 * 24 * 60 * 60, sameSite: 'lax' });
+    cookieStore.set('fittrack:accessToken', access, { path: '/', maxAge: 7 * 24 * 60 * 60, sameSite: 'lax' });
     cookieStore.set('fittrack:user', JSON.stringify(user), { path: '/', maxAge: 7 * 24 * 60 * 60, sameSite: 'lax' });
   } catch (e) {
     // Ignore errors when called in Server Components (where cookies cannot be set)
@@ -39,7 +37,6 @@ export async function clearServerTokens() {
   try {
     const cookieStore = await cookies();
     cookieStore.delete('fittrack:accessToken');
-    cookieStore.delete('fittrack:refreshToken');
     cookieStore.delete('fittrack:user');
   } catch (e) {
     // Ignore errors when called in Server Components

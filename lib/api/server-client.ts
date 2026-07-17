@@ -24,6 +24,7 @@ export async function serverApiClient(endpoint: string, options: FetchOptions = 
   }
 
   const config: RequestInit = {
+    cache: 'no-store', // Disable caching for server-side fetches
     ...options,
     headers,
   };

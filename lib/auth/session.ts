@@ -37,6 +37,7 @@ export async function clearServerTokens() {
   try {
     const cookieStore = await cookies();
     cookieStore.delete('fittrack:accessToken');
+    cookieStore.delete('fittrack:refreshToken'); // Delete legacy refresh tokens from server cookie storage
     cookieStore.delete('fittrack:user');
   } catch (e) {
     // Ignore errors when called in Server Components

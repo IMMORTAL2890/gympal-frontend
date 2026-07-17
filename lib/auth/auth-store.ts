@@ -44,6 +44,7 @@ export function setTokens(access: string, user: User) {
 
 export function clearTokens() {
   deleteCookie('fittrack:accessToken');
+  deleteCookie('fittrack:refreshToken'); // Automatically clean up old legacy refresh token cookies
   deleteCookie('fittrack:user');
 }
 

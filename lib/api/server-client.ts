@@ -55,6 +55,11 @@ export async function serverApiClient(endpoint: string, options: FetchOptions = 
     const isOk = apiStatus >= 200 && apiStatus < 300;
 
     if (!isOk) {
+      // Gracefully suppress gym owner resolution errors before onboarding completes
+      if (data.message && data.message.includes('Gym owner ID not resolved')) {
+        console.warn("[serverApiClient] Suppressing unresolved gym owner error during onboarding. Returning null fallback.");
+        return null;
+      }
       throw {
         ...data,
         status: apiStatus,
@@ -66,6 +71,12 @@ export async function serverApiClient(endpoint: string, options: FetchOptions = 
   }
 
   if (!response.ok) {
+    // Gracefully suppress gym owner resolution errors before onboarding completes
+    if (data?.message && data.message.includes('Gym owner ID not resolved')) {
+      console.warn("[serverApiClient] Suppressing unresolved gym owner error during onboarding. Returning null fallback.");
+      return null;
+    }
+    
     // Include the HTTP status in the thrown error so callers (e.g. layout.tsx)
     // can detect 401/403 and redirect appropriately.
     const errorPayload = {

@@ -71,12 +71,7 @@ export default function OwnerLayoutClient({ initialMe, initialAlerts, children }
     }
   };
 
-  // Gym setup state
-  const [setupOpen, setSetupOpen] = useState(!initialMe?.gym);
-  const [gymName, setGymName] = useState('');
-  const [ownerName, setOwnerName] = useState('');
-  const [mobile, setMobile] = useState('');
-  const [setupLoading, setSetupLoading] = useState(false);
+
 
   // Notification bell polling state
   const [totalAlerts, setTotalAlerts] = useState(
@@ -108,10 +103,7 @@ export default function OwnerLayoutClient({ initialMe, initialAlerts, children }
     }
   }, []);
 
-  // Update setupOpen state if initialMe changes
-  useEffect(() => {
-    setSetupOpen(!initialMe?.gym);
-  }, [initialMe]);
+
 
   // Periodically poll alerts count (every 30 seconds) using native useEffect + fetch
   useEffect(() => {
@@ -131,33 +123,7 @@ export default function OwnerLayoutClient({ initialMe, initialAlerts, children }
     return () => clearInterval(interval);
   }, [initialMe]);
 
-  const handleSetupSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!gymName || !ownerName || !mobile) {
-      toast.error('All fields are required');
-      return;
-    }
-    if (!mobile.match(/^[0-9+\-\s]{7,15}$/)) {
-      toast.error('Enter a valid mobile number (7-15 digits)');
-      return;
-    }
 
-    setSetupLoading(true);
-    try {
-      const result = await setupGymAction({ gymName, ownerName, mobile });
-      if (result && (result as any).error) {
-        toast.error((result as any).error);
-        return;
-      }
-      toast.success('Gym registered successfully!');
-      setSetupOpen(false);
-      router.refresh(); // Triggers server components refresh
-    } catch (err: any) {
-      toast.error(err.message || 'Setup failed. Please try again.');
-    } finally {
-      setSetupLoading(false);
-    }
-  };
 
   const handleSignOut = () => {
     clearTokens();
@@ -174,86 +140,7 @@ export default function OwnerLayoutClient({ initialMe, initialAlerts, children }
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col lg:flex-row">
-      {/* 1. Onboarding Modal Guard (non-dismissible if no gym profile exists) */}
-      {setupOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
-          <div className="w-full max-w-md bg-white rounded-2xl border shadow-xl p-8 animate-fade-in-up">
-            <div className="flex flex-col items-center text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-success/15 border border-success/35">
-                <Dumbbell className="h-6 w-6 text-success animate-pulse-glow" />
-              </div>
-              <h2 className="mt-4 text-2xl font-bold text-foreground">Complete Gym Setup</h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Set up your gym profile to begin tracking members.
-              </p>
-            </div>
 
-            <form onSubmit={handleSetupSubmit} className="mt-6 space-y-4">
-              <div>
-                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-1">
-                  Gym Name
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Iron Gym Central"
-                  value={gymName}
-                  onChange={(e) => setGymName(e.target.value)}
-                  className="w-full rounded-xl border bg-background py-2.5 px-4 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all duration-200"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-1">
-                  Owner Name
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Arjun Sharma"
-                  value={ownerName}
-                  onChange={(e) => setOwnerName(e.target.value)}
-                  className="w-full rounded-xl border bg-background py-2.5 px-4 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all duration-200"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-1">
-                  Mobile Number
-                </label>
-                <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <Phone className="h-4 w-4 text-muted-foreground" />
-                  </div>
-                  <input
-                    type="tel"
-                    required
-                    placeholder="9876543210"
-                    value={mobile}
-                    onChange={(e) => setMobile(e.target.value)}
-                    className="w-full rounded-xl border bg-background py-2.5 pl-10 pr-4 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all duration-200"
-                  />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={setupLoading}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-success py-3 px-4 text-sm font-bold text-success-foreground hover:bg-success/95 transition-all duration-200 shadow-sm disabled:opacity-50 cursor-pointer"
-              >
-                {setupLoading ? (
-                  <Loader2 className="h-4.5 w-4.5 animate-spin" />
-                ) : (
-                  <>
-                    <CheckCircle2 className="h-4.5 w-4.5" />
-                    Save & Initialize Gym
-                  </>
-                )}
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
 
       {/* 2. Desktop Sidebar */}
       <aside 

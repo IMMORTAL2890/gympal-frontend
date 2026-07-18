@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { Dumbbell, Mail, Lock, Loader2, ArrowRight } from 'lucide-react';
+import { Dumbbell, Mail, Lock, Loader2, ArrowRight, Phone, User } from 'lucide-react';
 import { setTokens } from '@/lib/auth/auth-store';
 import { apiClient } from '@/lib/api/client';
 import { toast } from 'sonner';
@@ -12,6 +12,9 @@ export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [gymName, setGymName] = useState('');
+  const [ownerName, setOwnerName] = useState('');
+  const [mobile, setMobile] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const googleBtnRef = useRef<HTMLDivElement>(null);
@@ -78,16 +81,31 @@ export default function AuthPage() {
       return;
     }
 
+    if (!isLogin) {
+      if (!gymName || !ownerName || !mobile) {
+        toast.error('Please fill in all gym onboarding fields');
+        return;
+      }
+      if (!mobile.match(/^[0-9+\-\s]{7,15}$/)) {
+        toast.error('Enter a valid mobile number (7-15 digits)');
+        return;
+      }
+    }
+
     setLoading(true);
     const endpoint = isLogin ? '/auth/login' : '/auth/signup';
+    const requestBody = isLogin 
+      ? { email, password } 
+      : { email, password, gymName, ownerName, mobile };
+
     try {
       const data = await apiClient(endpoint, {
         method: 'POST',
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify(requestBody),
       });
       // Save only accessToken and user info (removed refreshToken)
       setTokens(data.accessToken, data.user);
-      toast.success(isLogin ? 'Welcome back!' : 'Account created successfully!');
+      toast.success(isLogin ? 'Welcome back!' : 'Account created and Gym setup successfully!');
       router.replace('/dashboard');
     } catch (err: any) {
       toast.error(err.message || 'Authentication failed');
@@ -157,6 +175,67 @@ export default function AuthPage() {
               />
             </div>
           </div>
+
+          {!isLogin && (
+            <>
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">
+                  Gym Name
+                </label>
+                <div className="relative">
+                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                    <Dumbbell className="h-4.5 w-4.5 text-muted-foreground" />
+                  </div>
+                  <input
+                    type="text"
+                    required
+                    value={gymName}
+                    onChange={(e) => setGymName(e.target.value)}
+                    placeholder="Iron Gym Central"
+                    className="w-full rounded-xl border bg-background py-2.5 pl-10 pr-4 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all duration-200"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">
+                  Owner Name
+                </label>
+                <div className="relative">
+                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                    <User className="h-4.5 w-4.5 text-muted-foreground" />
+                  </div>
+                  <input
+                    type="text"
+                    required
+                    value={ownerName}
+                    onChange={(e) => setOwnerName(e.target.value)}
+                    placeholder="Arjun Sharma"
+                    className="w-full rounded-xl border bg-background py-2.5 pl-10 pr-4 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all duration-200"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block mb-1">
+                  Mobile Number
+                </label>
+                <div className="relative">
+                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                    <Phone className="h-4.5 w-4.5 text-muted-foreground" />
+                  </div>
+                  <input
+                    type="tel"
+                    required
+                    value={mobile}
+                    onChange={(e) => setMobile(e.target.value)}
+                    placeholder="9876543210"
+                    className="w-full rounded-xl border bg-background py-2.5 pl-10 pr-4 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all duration-200"
+                  />
+                </div>
+              </div>
+            </>
+          )}
 
           {isLogin && (
             <div className="flex items-center justify-end text-xs">

@@ -6,6 +6,7 @@ import { Dumbbell, Mail, Lock, Loader2, ArrowRight, Phone, User } from 'lucide-r
 import { setTokens } from '@/lib/auth/auth-store';
 import { apiClient } from '@/lib/api/client';
 import { toast } from 'sonner';
+import { getFriendlyErrorMessage } from '@/lib/utils/error-handler';
 
 export default function AuthPage() {
   const router = useRouter();
@@ -64,7 +65,7 @@ export default function AuthPage() {
       toast.success('Signed in with Google!');
       router.replace('/dashboard');
     } catch (err: any) {
-      toast.error(err.message || 'Google OAuth failed');
+      toast.error(getFriendlyErrorMessage(err));
     } finally {
       setGoogleLoading(false);
     }
@@ -108,7 +109,7 @@ export default function AuthPage() {
       toast.success(isLogin ? 'Welcome back!' : 'Account created and Gym setup successfully!');
       router.replace('/dashboard');
     } catch (err: any) {
-      toast.error(err.message || 'Authentication failed');
+      toast.error(getFriendlyErrorMessage(err));
     } finally {
       setLoading(false);
     }

@@ -7,6 +7,7 @@ import { setupGymAction } from '@/app/actions';
 import { clearTokens } from '@/lib/auth/auth-store';
 import { apiClient } from '@/lib/api/client';
 import { toast } from 'sonner';
+import { getFriendlyErrorMessage } from '@/lib/utils/error-handler';
 
 export default function SetupPage() {
   const router = useRouter();
@@ -51,13 +52,13 @@ export default function SetupPage() {
     try {
       const result = await setupGymAction({ gymName, ownerName, mobile });
       if (result && (result as any).error) {
-        toast.error((result as any).error);
+        toast.error(getFriendlyErrorMessage((result as any).error));
         return;
       }
       toast.success('Gym registered successfully!');
       router.replace('/dashboard');
     } catch (err: any) {
-      toast.error(err.message || 'Setup failed. Please try again.');
+      toast.error(getFriendlyErrorMessage(err));
     } finally {
       setLoading(false);
     }

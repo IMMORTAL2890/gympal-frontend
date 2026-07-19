@@ -2,7 +2,10 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Calendar, Users, UserCheck, UserX, Cpu, X, BookOpen, AlertCircle } from 'lucide-react';
+import Link from 'next/link';
+import { Calendar, Users, UserCheck, UserX, Cpu, X, BookOpen, AlertCircle, Search, Plus, Loader2 } from 'lucide-react';
+import { apiClient } from '@/lib/api/client';
+import { toast } from 'sonner';
 
 interface AttendanceClientProps {
   initialAttendance: any[];
@@ -13,6 +16,17 @@ export default function AttendanceClient({ initialAttendance, date }: Attendance
   const router = useRouter();
   const [guideOpen, setGuideOpen] = useState(false);
   const [dateStr, setDateStr] = useState(date);
+  
+  // Search & Filter state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'present' | 'absent'>('all');
+
+  // Manual check-in modal state
+  const [manualOpen, setManualOpen] = useState(false);
+  const [selectedMemberId, setSelectedMemberId] = useState('');
+  const [punchType, setPunchType] = useState('in');
+  const [note, setNote] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleDateChange = (d: string) => {
     setDateStr(d);
@@ -23,6 +37,44 @@ export default function AttendanceClient({ initialAttendance, date }: Attendance
   const present = initialAttendance?.filter((r: any) => r.status === 'present').length || 0;
   const absent = total - present;
 
+  // Filter attendance list
+  const filteredAttendance = (initialAttendance || []).filter((r: any) => {
+    const matchesSearch = r.memberName?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          r.biometricUid?.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    if (statusFilter === 'all') return matchesSearch;
+    return matchesSearch && r.status === statusFilter;
+  });
+
+  const handleManualCheckIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedMemberId) {
+      toast.error('Please select a member');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await apiClient('/attendance/manual', {
+        method: 'POST',
+        body: JSON.stringify({
+          memberId: parseInt(selectedMemberId),
+          punchType,
+          note
+        })
+      });
+      toast.success('Attendance recorded successfully!');
+      setManualOpen(false);
+      setSelectedMemberId('');
+      setNote('');
+      router.refresh();
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to record attendance');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -31,13 +83,28 @@ export default function AttendanceClient({ initialAttendance, date }: Attendance
           <h1 className="text-2xl font-bold text-foreground md:text-3xl">Daily Attendance</h1>
           <p className="text-xs text-muted-foreground">Monitor daily member checks, first-in/last-out schedules, and biometric synchronizations.</p>
         </div>
-        <button
-          onClick={() => setGuideOpen(true)}
-          className="inline-flex items-center justify-center gap-2 rounded-xl border bg-white text-foreground py-2.5 px-4 text-xs font-bold hover:bg-muted/40 cursor-pointer shadow-sm shrink-0"
-        >
-          <Cpu className="h-4.5 w-4.5 text-primary" />
-          Setup Biometric Bridge
-        </button>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/attendance/monthly"
+            className="inline-flex items-center justify-center gap-1.5 rounded-xl border bg-white text-foreground py-2.5 px-4 text-xs font-bold hover:bg-muted/40 cursor-pointer shadow-sm shrink-0"
+          >
+            Monthly View
+          </Link>
+          <button
+            onClick={() => setManualOpen(true)}
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-success text-success-foreground py-2.5 px-4 text-xs font-bold hover:bg-success/90 cursor-pointer shadow-sm shrink-0"
+          >
+            <Plus className="h-4.5 w-4.5" />
+            Manual Check-In
+          </button>
+          <button
+            onClick={() => setGuideOpen(true)}
+            className="inline-flex items-center justify-center gap-2 rounded-xl border bg-white text-foreground py-2.5 px-4 text-xs font-bold hover:bg-muted/40 cursor-pointer shadow-sm shrink-0"
+          >
+            <Cpu className="h-4.5 w-4.5 text-primary" />
+            Setup Biometric Bridge
+          </button>
+        </div>
       </div>
 
       {/* Date Picker & Metrics Grid */}
@@ -84,11 +151,54 @@ export default function AttendanceClient({ initialAttendance, date }: Attendance
         </div>
       </div>
 
+      {/* Search and Filters Toolbar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border p-4 rounded-2xl shadow-sm">
+        <div className="relative w-full sm:max-w-xs">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+            <Search className="h-4 w-4 text-muted-foreground" />
+          </div>
+          <input
+            type="text"
+            placeholder="Search member or UID..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full rounded-xl border bg-background py-2 pl-10 pr-3 text-xs outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200"
+          />
+        </div>
+
+        <div className="flex items-center gap-1.5 border p-1 rounded-xl bg-muted/30">
+          <button
+            onClick={() => setStatusFilter('all')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              statusFilter === 'all' ? 'bg-white shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            All
+          </button>
+          <button
+            onClick={() => setStatusFilter('present')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              statusFilter === 'present' ? 'bg-success/15 text-success' : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            Present
+          </button>
+          <button
+            onClick={() => setStatusFilter('absent')}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+              statusFilter === 'absent' ? 'bg-destructive/15 text-destructive' : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            Absent
+          </button>
+        </div>
+      </div>
+
       {/* Attendance Table */}
-      {!initialAttendance || initialAttendance.length === 0 ? (
+      {!filteredAttendance || filteredAttendance.length === 0 ? (
         <div className="bg-white border rounded-2xl p-12 text-center shadow-sm">
           <h3 className="text-md font-bold text-foreground">No records found</h3>
-          <p className="text-xs text-muted-foreground mt-1">Please register members and setup a biometric device first.</p>
+          <p className="text-xs text-muted-foreground mt-1">Try adjusting your filters or add a new record manually.</p>
         </div>
       ) : (
         <div className="bg-white border rounded-2xl shadow-sm overflow-hidden">
@@ -105,9 +215,16 @@ export default function AttendanceClient({ initialAttendance, date }: Attendance
                 </tr>
               </thead>
               <tbody>
-                {initialAttendance.map((r: any) => (
+                {filteredAttendance.map((r: any) => (
                   <tr key={r.memberId} className="border-b hover:bg-muted/10 transition-colors">
-                    <td className="px-6 py-4 font-bold text-foreground">{r.memberName}</td>
+                    <td className="px-6 py-4 font-bold text-foreground">
+                      <Link
+                        href={`/attendance/monthly?memberId=${r.memberId}`}
+                        className="text-primary hover:underline cursor-pointer"
+                      >
+                        {r.memberName}
+                      </Link>
+                    </td>
                     <td className="px-6 py-4 font-semibold text-muted-foreground">{r.biometricUid || 'Not Set'}</td>
                     <td className="px-6 py-4 text-xs font-semibold text-muted-foreground">{r.firstIn || '-'}</td>
                     <td className="px-6 py-4 text-xs font-semibold text-muted-foreground">{r.lastOut || '-'}</td>
@@ -125,6 +242,98 @@ export default function AttendanceClient({ initialAttendance, date }: Attendance
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* MANUAL CHECK-IN DIALOG */}
+      {manualOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+          <div className="w-full max-w-md bg-white border rounded-2xl shadow-2xl p-6 animate-fade-in-up">
+            <div className="flex items-center justify-between border-b pb-3 mb-4">
+              <h3 className="text-md font-extrabold text-foreground">Record Attendance Manually</h3>
+              <button onClick={() => setManualOpen(false)} className="p-1 rounded hover:bg-muted text-muted-foreground cursor-pointer">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleManualCheckIn} className="space-y-4">
+              <div>
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
+                  Select Member
+                </label>
+                <select
+                  required
+                  value={selectedMemberId}
+                  onChange={(e) => setSelectedMemberId(e.target.value)}
+                  className="w-full rounded-xl border bg-background py-2 px-3 text-xs outline-none focus:border-primary cursor-pointer"
+                >
+                  <option value="">-- Choose Member --</option>
+                  {(initialAttendance || []).map((m: any) => (
+                    <option key={m.memberId} value={m.memberId}>
+                      {m.memberName} ({m.status})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
+                  Punch Type
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setPunchType('in')}
+                    className={`py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                      punchType === 'in' ? 'bg-primary/10 border-primary text-primary' : 'bg-background hover:bg-muted/40'
+                    }`}
+                  >
+                    Check In (In)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPunchType('out')}
+                    className={`py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                      punchType === 'out' ? 'bg-primary/10 border-primary text-primary' : 'bg-background hover:bg-muted/40'
+                    }`}
+                  >
+                    Check Out (Out)
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block mb-1">
+                  Optional Note
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Forgot card / Manual entry"
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  className="w-full rounded-xl border bg-background py-2 px-3 text-xs outline-none focus:border-primary"
+                />
+              </div>
+
+              <div className="flex gap-2 justify-end border-t pt-4 mt-6">
+                <button
+                  type="button"
+                  onClick={() => setManualOpen(false)}
+                  className="px-4 py-2 rounded-xl border text-xs font-bold hover:bg-muted/40 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-5 py-2 rounded-xl bg-success text-success-foreground text-xs font-bold hover:bg-success/90 disabled:opacity-50 cursor-pointer flex items-center gap-1.5 shadow-sm"
+                >
+                  {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+                  Submit Entry
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

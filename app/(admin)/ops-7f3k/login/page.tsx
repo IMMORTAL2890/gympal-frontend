@@ -27,7 +27,7 @@ export default function AdminLoginPage() {
         body: JSON.stringify({ email, password }),
       });
 
-      if (data.user.role !== 'ADMIN') {
+      if (data.user.role !== 'ADMIN' && data.user.role !== 'SUPER_ADMIN') {
         clearTokens();
         toast.error('Access denied. Not a platform admin.');
         setLoading(false);

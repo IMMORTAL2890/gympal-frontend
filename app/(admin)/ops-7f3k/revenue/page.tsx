@@ -6,7 +6,7 @@ import OpsRevenueClient from '@/components/OpsRevenueClient';
 
 export default async function OpsRevenuePage() {
   const { accessToken, user } = await getServerTokens();
-  if (!accessToken || !user || user.role !== 'ADMIN') {
+  if (!accessToken || !user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
     redirect('/ops-7f3k/login');
   }
 

@@ -6,7 +6,7 @@ import OpsUsersClient from '@/components/OpsUsersClient';
 
 export default async function OpsUsersPage() {
   const { accessToken, user } = await getServerTokens();
-  if (!accessToken || !user || user.role !== 'ADMIN') {
+  if (!accessToken || !user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
     redirect('/ops-7f3k/login');
   }
 

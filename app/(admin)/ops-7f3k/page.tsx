@@ -6,7 +6,7 @@ import OpsDashboardClient from '@/components/OpsDashboardClient';
 
 export default async function OpsDashboardPage() {
   const { accessToken, user } = await getServerTokens();
-  if (!accessToken || !user || user.role !== 'ADMIN') {
+  if (!accessToken || !user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
     redirect('/ops-7f3k/login');
   }
 

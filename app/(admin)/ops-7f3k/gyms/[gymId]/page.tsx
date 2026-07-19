@@ -15,7 +15,7 @@ export default async function AdminGymDetailPage({ params }: PageProps) {
   const gymId = resolvedParams.gymId;
 
   const { accessToken, user } = await getServerTokens();
-  if (!accessToken || !user || user.role !== 'ADMIN') {
+  if (!accessToken || !user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
     redirect('/ops-7f3k/login');
   }
 

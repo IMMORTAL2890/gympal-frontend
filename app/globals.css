@@ -33,33 +33,33 @@
 }
 
 html.dark {
-  --background: oklch(0.12 0.015 240); /* Premium dark slate background */
-  --foreground: oklch(0.94 0.005 240);
-  --card: oklch(0.16 0.02 240); /* Beautiful clean card grey */
-  --card-foreground: oklch(0.94 0.005 240);
-  --popover: oklch(0.16 0.02 240);
-  --popover-foreground: oklch(0.94 0.005 240);
-  --primary: oklch(0.72 0.14 240); /* Energetic cyan-blue primary for dark */
-  --primary-foreground: oklch(0.12 0.015 240);
-  --secondary: oklch(0.22 0.02 240);
-  --secondary-foreground: oklch(0.94 0.005 240);
-  --muted: oklch(0.20 0.02 240);
-  --muted-foreground: oklch(0.65 0.01 240);
-  --accent: oklch(0.22 0.02 240);
-  --accent-foreground: oklch(0.95 0.005 240);
-  --destructive: oklch(0.62 0.18 25);
+  --background: oklch(0.09 0.015 250); /* Ultra premium Obsidian black-blue */
+  --foreground: oklch(0.96 0.005 250);
+  --card: oklch(0.12 0.02 250); /* Sleek charcoal card background */
+  --card-foreground: oklch(0.96 0.005 250);
+  --popover: oklch(0.12 0.02 250);
+  --popover-foreground: oklch(0.96 0.005 250);
+  --primary: oklch(0.68 0.21 285); /* Electric Violet primary */
+  --primary-foreground: #ffffff;
+  --secondary: oklch(0.18 0.03 250);
+  --secondary-foreground: oklch(0.96 0.005 250);
+  --muted: oklch(0.16 0.02 250);
+  --muted-foreground: oklch(0.70 0.01 250);
+  --accent: oklch(0.18 0.03 250);
+  --accent-foreground: oklch(0.98 0.005 250);
+  --destructive: oklch(0.58 0.22 25);
   --destructive-foreground: #ffffff;
-  --success: oklch(0.70 0.15 145);
-  --success-foreground: oklch(0.12 0.015 240);
-  --warning: oklch(0.76 0.13 75);
-  --warning-foreground: oklch(0.12 0.015 240);
-  --border: oklch(0.20 0.02 240);
-  --input: oklch(0.20 0.02 240);
-  --ring: oklch(0.72 0.14 240);
+  --success: oklch(0.72 0.18 150); /* Cyber Emerald green */
+  --success-foreground: #090d16;
+  --warning: oklch(0.78 0.16 75);
+  --warning-foreground: #090d16;
+  --border: oklch(0.17 0.02 250); /* Thin elegant charcoal border */
+  --input: oklch(0.17 0.02 250);
+  --ring: oklch(0.68 0.21 285);
 
-  --sidebar-background: oklch(0.09 0.015 240); /* True pitch-dark sidebar */
-  --sidebar-foreground: oklch(0.85 0.01 240);
-  --sidebar-accent: oklch(0.15 0.02 240);
+  --sidebar-background: oklch(0.07 0.012 250); /* Darker sidebar shade for depth */
+  --sidebar-foreground: oklch(0.88 0.01 250);
+  --sidebar-accent: oklch(0.14 0.03 250);
   --sidebar-accent-foreground: #ffffff;
 }
 
@@ -261,4 +261,55 @@ html.dark .shadow-md {
 html.dark .shadow-lg {
   box-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.35) !important;
 }
+
+/* Owner Panel & Auth Panel Premium Custom Theme Overrides */
+.owner-panel, .auth-panel {
+  --border-light-grey: oklch(0.94 0.01 250); /* Ultra light grey border */
+  --shadow-premium: 0 4px 20px -2px rgba(0, 0, 0, 0.04), 0 2px 8px -1px rgba(0, 0, 0, 0.02);
+}
+
+.owner-panel input,
+.owner-panel select,
+.owner-panel textarea,
+.owner-panel .border,
+.owner-panel .border-t,
+.owner-panel .border-b,
+.owner-panel .border-r,
+.owner-panel .border-l,
+.owner-panel td,
+.owner-panel th,
+.owner-panel hr,
+.owner-panel div[class*="border"],
+.auth-panel input,
+.auth-panel select,
+.auth-panel textarea,
+.auth-panel .border,
+.auth-panel .border-t,
+.auth-panel .border-b,
+.auth-panel .border-r,
+.auth-panel .border-l,
+.auth-panel div[class*="border"] {
+  border-color: var(--border-light-grey) !important;
+}
+
+/* Premium shadows behind cards/containers for depth */
+.owner-panel .bg-card,
+.owner-panel .bg-white,
+.owner-panel .rounded-2xl,
+.owner-panel .rounded-3xl,
+.owner-panel table,
+.owner-panel form,
+.auth-panel .bg-white,
+.auth-panel .rounded-2xl,
+.auth-panel form {
+  box-shadow: var(--shadow-premium) !important;
+}
+
+/* Dark mode theme overrides */
+html.dark .owner-panel,
+html.dark .auth-panel {
+  --border-light-grey: oklch(0.15 0.015 250); /* Extremely soft dark border */
+  --shadow-premium: 0 4px 24px -2px rgba(0, 0, 0, 0.35), 0 2px 10px -1px rgba(0, 0, 0, 0.2);
+}
+
 

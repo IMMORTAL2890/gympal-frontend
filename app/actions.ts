@@ -222,3 +222,15 @@ export async function logNotificationAction(data: any): Promise<ActionResult> {
     return { error: extractMessage(error) };
   }
 }
+
+// 7. Cookie/Session Writing Actions
+import { setServerTokens, clearServerTokens } from '@/lib/auth/session';
+
+export async function setTokensAction(access: string, user: any): Promise<void> {
+  await setServerTokens(access, user);
+}
+
+export async function clearTokensAction(): Promise<void> {
+  await clearServerTokens();
+}
+

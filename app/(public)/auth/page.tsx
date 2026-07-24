@@ -127,7 +127,7 @@ export default function AuthPage() {
 
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8 overflow-hidden">
+    <div className="auth-panel relative flex min-h-screen items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8 overflow-hidden">
       {/* Background decoration bubbles */}
       <div className="absolute inset-0 z-0 opacity-5">
         <div className="absolute w-72 h-72 rounded-full bg-success filter blur-3xl -top-20 -left-20 animate-float-bubble" />
@@ -186,7 +186,7 @@ export default function AuthPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground cursor-pointer"
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground dark:text-slate-400 dark:hover:text-slate-200 cursor-pointer z-10"
               >
                 {showPassword ? (
                   <EyeOff className="h-4.5 w-4.5" />

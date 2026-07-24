@@ -139,7 +139,7 @@ export default function OwnerLayoutClient({ initialMe, initialAlerts, children }
   };
 
   return (
-    <div className="min-h-screen lg:h-screen lg:overflow-hidden bg-background text-foreground flex flex-col lg:flex-row">
+    <div className="owner-panel min-h-screen lg:h-screen lg:overflow-hidden bg-background text-foreground flex flex-col lg:flex-row">
 
 
       {/* 2. Desktop Sidebar */}

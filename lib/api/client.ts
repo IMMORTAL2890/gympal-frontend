@@ -44,12 +44,16 @@ export async function apiClient(endpoint: string, options: FetchOptions = {}): P
   if (response.status === 401) {
     clearTokens();
     if (typeof window !== 'undefined') {
-      const isOpsPath = window.location.pathname.startsWith('/ops-7f3k');
-      window.location.href = isOpsPath ? '/ops-7f3k/login' : '/auth';
+      const currentPath = window.location.pathname;
+      const isAuthPage = currentPath === '/auth' || currentPath === '/ops-7f3k/login' || currentPath.startsWith('/reset-password');
+      if (!isAuthPage) {
+        const isOpsPath = currentPath.startsWith('/ops-7f3k');
+        window.location.href = isOpsPath ? '/ops-7f3k/login' : '/auth';
+      }
     }
     throw {
       status: 401,
-      message: 'Session expired',
+      message: 'Invalid email or password',
     };
   }
 

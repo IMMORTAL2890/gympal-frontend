@@ -12,12 +12,14 @@ function getCookie(name: string): string | null {
 
 function setCookie(name: string, value: string, maxAgeSeconds: number) {
   if (typeof window === 'undefined') return;
-  document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAgeSeconds}; SameSite=Lax; Secure=${window.location.protocol === 'https:'}`;
+  const secureFlag = window.location.protocol === 'https:' ? '; Secure' : '';
+  document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAgeSeconds}; SameSite=Lax${secureFlag}`;
 }
 
 function deleteCookie(name: string) {
   if (typeof window === 'undefined') return;
-  document.cookie = `${name}=; path=/; max-age=0; SameSite=Lax`;
+  const secureFlag = window.location.protocol === 'https:' ? '; Secure' : '';
+  document.cookie = `${name}=; path=/; max-age=0; SameSite=Lax${secureFlag}`;
 }
 
 export function getAccessToken(): string | null {
@@ -36,16 +38,23 @@ export function getUser(): User | null {
   return null;
 }
 
+import { setTokensAction, clearTokensAction } from '@/app/actions';
+
 export function setTokens(access: string, user: User) {
   // Access token cookie lives for 7 days now
   setCookie('fittrack:accessToken', access, 7 * 24 * 60 * 60);
   setCookie('fittrack:user', JSON.stringify(user), 7 * 24 * 60 * 60);
+  
+  // Asynchronously call the Next.js server actions to write cookies server-side
+  setTokensAction(access, user).catch(err => console.error("Error setting server tokens:", err));
 }
 
 export function clearTokens() {
   deleteCookie('fittrack:accessToken');
   deleteCookie('fittrack:refreshToken'); // Automatically clean up old legacy refresh token cookies
   deleteCookie('fittrack:user');
+  
+  clearTokensAction().catch(err => console.error("Error clearing server tokens:", err));
 }
 
 export function isAuthenticated(): boolean {

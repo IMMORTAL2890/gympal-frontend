@@ -91,7 +91,7 @@ function ConfirmResetPasswordContent() {
                   <button
                     type="button"
                     onClick={() => setShowNew(!showNew)}
-                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground dark:text-slate-400 dark:hover:text-slate-200 cursor-pointer transition-colors z-10"
                   >
                     {showNew ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
                   </button>
@@ -117,7 +117,7 @@ function ConfirmResetPasswordContent() {
                   <button
                     type="button"
                     onClick={() => setShowConfirm(!showConfirm)}
-                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground dark:text-slate-400 dark:hover:text-slate-200 cursor-pointer transition-colors z-10"
                   >
                     {showConfirm ? <EyeOff className="h-4.5 w-4.5" /> : <Eye className="h-4.5 w-4.5" />}
                   </button>

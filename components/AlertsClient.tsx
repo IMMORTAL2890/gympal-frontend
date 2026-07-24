@@ -112,13 +112,13 @@ export default function AlertsClient({ initialAlerts }: AlertsClientProps) {
           <div className="bg-white border rounded-2xl shadow-sm overflow-hidden flex flex-col justify-between h-fit">
             <div className="flex items-center gap-2 px-6 py-4 border-b bg-muted/20">
               <CalendarDays className="h-4.5 w-4.5 text-warning" />
-              <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">Expiring In 7 Days ({expiringList.length})</h3>
+              <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">Expiring In {initialAlerts?.reminderDays || 7} Days ({expiringList.length})</h3>
             </div>
             
             <div className="divide-y max-h-[70vh] overflow-y-auto">
               {expiringList.length === 0 ? (
                 <div className="p-6 text-center text-xs font-semibold text-muted-foreground">
-                  No plans expiring in the next 7 days.
+                  No plans expiring in the next {initialAlerts?.reminderDays || 7} days.
                 </div>
               ) : (
                 expiringList.map((item: any) => (

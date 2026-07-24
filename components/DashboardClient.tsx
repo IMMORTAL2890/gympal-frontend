@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { 
   Users, UserCheck, AlertTriangle, ShieldAlert, 
   Calendar, CreditCard, DollarSign, ArrowRight, 
-  Landmark, ArrowUpRight
+  Landmark, ArrowUpRight, Info
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
@@ -23,6 +23,7 @@ export default function DashboardClient({ stats, from, to, initialFilterType }: 
   const [filterType, setFilterType] = useState<'month' | 'year' | 'custom'>(initialFilterType);
   const [fromStr, setFromStr] = useState(from);
   const [toStr, setToStr] = useState(to);
+  const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
 
   const formatDateString = (d: Date) => {
     return d.toISOString().split('T')[0];
@@ -127,92 +128,230 @@ export default function DashboardClient({ stats, from, to, initialFilterType }: 
         </div>
       </div>
 
+      {/* Click outside dismissal layer */}
+      {activeTooltip && (
+        <div 
+          className="fixed inset-0 z-30 bg-transparent" 
+          onClick={() => setActiveTooltip(null)}
+        />
+      )}
+
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-        <div className="bg-white border rounded-xl p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+        {/* Total Members */}
+        <div className="relative bg-white border rounded-xl p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Members</span>
+            <div className="flex items-center gap-1">
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Members</span>
+              <button 
+                type="button"
+                onClick={(e) => { e.stopPropagation(); setActiveTooltip(activeTooltip === 'total' ? null : 'total'); }}
+                className="text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+              >
+                <Info className="h-3 w-3" />
+              </button>
+            </div>
             <div className="p-1.5 rounded-lg bg-muted text-foreground"><Users className="h-4 w-4" /></div>
           </div>
           <div className="mt-4">
             <span className="text-2xl font-bold text-foreground">{stats?.totalMembers}</span>
           </div>
+          {activeTooltip === 'total' && (
+            <div className="absolute top-12 left-5 right-5 z-40 bg-slate-800 text-white text-[10px] p-2.5 rounded-xl border border-slate-700 shadow-lg leading-normal animate-fade-in">
+              The total count of all members registered in your database.
+            </div>
+          )}
         </div>
 
-        <div className="bg-white border rounded-xl p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+        {/* Active Members */}
+        <div className="relative bg-white border rounded-xl p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Active Members</span>
+            <div className="flex items-center gap-1">
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Active Members</span>
+              <button 
+                type="button"
+                onClick={(e) => { e.stopPropagation(); setActiveTooltip(activeTooltip === 'active' ? null : 'active'); }}
+                className="text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+              >
+                <Info className="h-3 w-3" />
+              </button>
+            </div>
             <div className="p-1.5 rounded-lg bg-success/15 text-success"><UserCheck className="h-4 w-4" /></div>
           </div>
           <div className="mt-4">
             <span className="text-2xl font-bold text-foreground">{stats?.activeMembers}</span>
           </div>
+          {activeTooltip === 'active' && (
+            <div className="absolute top-12 left-5 right-5 z-40 bg-slate-800 text-white text-[10px] p-2.5 rounded-xl border border-slate-700 shadow-lg leading-normal animate-fade-in">
+              Members currently holding an active or expiring membership plan.
+            </div>
+          )}
         </div>
 
-        <div className="bg-white border rounded-xl p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+        {/* Expiring (Week) */}
+        <div className="relative bg-white border rounded-xl p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Expiring (Week)</span>
+            <div className="flex items-center gap-1">
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Expiring (Week)</span>
+              <button 
+                type="button"
+                onClick={(e) => { e.stopPropagation(); setActiveTooltip(activeTooltip === 'expiring' ? null : 'expiring'); }}
+                className="text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+              >
+                <Info className="h-3 w-3" />
+              </button>
+            </div>
             <div className="p-1.5 rounded-lg bg-warning/15 text-warning"><AlertTriangle className="h-4 w-4" /></div>
           </div>
           <div className="mt-4">
             <span className="text-2xl font-bold text-foreground">{stats?.expiringThisWeek}</span>
           </div>
+          {activeTooltip === 'expiring' && (
+            <div className="absolute top-12 left-5 right-5 z-40 bg-slate-800 text-white text-[10px] p-2.5 rounded-xl border border-slate-700 shadow-lg leading-normal animate-fade-in">
+              Members whose plans are ending within the next 7 days.
+            </div>
+          )}
         </div>
 
-        <div className="bg-white border rounded-xl p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+        {/* Present Today */}
+        <div className="relative bg-white border rounded-xl p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Present Today</span>
+            <div className="flex items-center gap-1">
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Present Today</span>
+              <button 
+                type="button"
+                onClick={(e) => { e.stopPropagation(); setActiveTooltip(activeTooltip === 'present' ? null : 'present'); }}
+                className="text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+              >
+                <Info className="h-3 w-3" />
+              </button>
+            </div>
             <div className="p-1.5 rounded-lg bg-success/10 text-success"><Calendar className="h-4 w-4" /></div>
           </div>
           <div className="mt-4">
             <span className="text-2xl font-bold text-foreground">{stats?.presentToday}</span>
           </div>
+          {activeTooltip === 'present' && (
+            <div className="absolute top-12 left-5 right-5 z-40 bg-slate-800 text-white text-[10px] p-2.5 rounded-xl border border-slate-700 shadow-lg leading-normal animate-fade-in">
+              Number of members checked in today.
+            </div>
+          )}
         </div>
 
-        <div className="bg-white border rounded-xl p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+        {/* Blocked */}
+        <div className="relative bg-white border rounded-xl p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Blocked</span>
+            <div className="flex items-center gap-1">
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Blocked</span>
+              <button 
+                type="button"
+                onClick={(e) => { e.stopPropagation(); setActiveTooltip(activeTooltip === 'blocked' ? null : 'blocked'); }}
+                className="text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+              >
+                <Info className="h-3 w-3" />
+              </button>
+            </div>
             <div className="p-1.5 rounded-lg bg-destructive/10 text-destructive"><ShieldAlert className="h-4 w-4" /></div>
           </div>
           <div className="mt-4">
             <span className="text-2xl font-bold text-foreground">{stats?.blockedMembers}</span>
           </div>
+          {activeTooltip === 'blocked' && (
+            <div className="absolute top-12 left-5 right-5 z-40 bg-slate-800 text-white text-[10px] p-2.5 rounded-xl border border-slate-700 shadow-lg leading-normal animate-fade-in">
+              Members manually flagged as blocked from entering the gym.
+            </div>
+          )}
         </div>
 
-        <div className="bg-white border rounded-xl p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+        {/* Collected (Range) */}
+        <div className="relative bg-white border rounded-xl p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Collected (Range)</span>
+            <div className="flex items-center gap-1">
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Collected (Range)</span>
+              <button 
+                type="button"
+                onClick={(e) => { e.stopPropagation(); setActiveTooltip(activeTooltip === 'collected' ? null : 'collected'); }}
+                className="text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+              >
+                <Info className="h-3 w-3" />
+              </button>
+            </div>
             <div className="p-1.5 rounded-lg bg-success/15 text-success"><Landmark className="h-4 w-4" /></div>
           </div>
           <div className="mt-4">
             <span className="text-2xl font-bold text-foreground">{formatCurrency(stats?.collected)}</span>
           </div>
+          {activeTooltip === 'collected' && (
+            <div className="absolute top-12 left-5 right-5 z-40 bg-slate-800 text-white text-[10px] p-2.5 rounded-xl border border-slate-700 shadow-lg leading-normal animate-fade-in">
+              Total subscription fees actually paid/collected within the filtered date range.
+            </div>
+          )}
         </div>
 
-        <div className="bg-white border rounded-xl p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
+        {/* Billed (Range) */}
+        <div className="relative bg-white border rounded-xl p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Billed (Range)</span>
+            <div className="flex items-center gap-1">
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Billed (Range)</span>
+              <button 
+                type="button"
+                onClick={(e) => { e.stopPropagation(); setActiveTooltip(activeTooltip === 'billed' ? null : 'billed'); }}
+                className="text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+              >
+                <Info className="h-3 w-3" />
+              </button>
+            </div>
             <div className="p-1.5 rounded-lg bg-muted text-foreground"><CreditCard className="h-4 w-4" /></div>
           </div>
           <div className="mt-4">
             <span className="text-2xl font-bold text-foreground">{formatCurrency(stats?.billed)}</span>
           </div>
+          {activeTooltip === 'billed' && (
+            <div className="absolute top-12 left-5 right-5 z-40 bg-slate-800 text-white text-[10px] p-2.5 rounded-xl border border-slate-700 shadow-lg leading-normal animate-fade-in">
+              Total subscription fees billed/invoiced within the filtered date range.
+            </div>
+          )}
         </div>
 
-        <div className="bg-white border rounded-xl p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow cursor-pointer" onClick={() => router.push('/members?status=dues')}>
+        {/* Due (Range) */}
+        <div className="relative bg-white border rounded-xl p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow cursor-pointer" onClick={() => router.push('/members?status=dues')}>
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Due (Range)</span>
+            <div className="flex items-center gap-1">
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Due (Range)</span>
+              <button 
+                type="button"
+                onClick={(e) => { e.stopPropagation(); setActiveTooltip(activeTooltip === 'due' ? null : 'due'); }}
+                className="text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+              >
+                <Info className="h-3 w-3" />
+              </button>
+            </div>
             <div className="p-1.5 rounded-lg bg-warning/15 text-warning"><DollarSign className="h-4 w-4" /></div>
           </div>
           <div className="mt-4 flex items-center justify-between">
             <span className="text-2xl font-bold text-foreground">{formatCurrency(stats?.dueInRange)}</span>
             <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
           </div>
+          {activeTooltip === 'due' && (
+            <div className="absolute top-12 left-5 right-5 z-40 bg-slate-800 text-white text-[10px] p-2.5 rounded-xl border border-slate-700 shadow-lg leading-normal animate-fade-in">
+              Outstanding dues accrued for memberships started within the filtered date range.
+            </div>
+          )}
         </div>
 
-        <div className="bg-white border rounded-xl p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow lg:col-span-2 cursor-pointer" onClick={() => router.push('/members?status=dues')}>
+        {/* Total Outstanding Dues */}
+        <div className="relative bg-white border rounded-xl p-5 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow lg:col-span-2 cursor-pointer" onClick={() => router.push('/members?status=dues')}>
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-destructive uppercase tracking-wider">Total Outstanding Dues</span>
+            <div className="flex items-center gap-1">
+              <span className="text-xs font-bold text-destructive uppercase tracking-wider">Total Outstanding Dues</span>
+              <button 
+                type="button"
+                onClick={(e) => { e.stopPropagation(); setActiveTooltip(activeTooltip === 'outstanding' ? null : 'outstanding'); }}
+                className="text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+              >
+                <Info className="h-3 w-3" />
+              </button>
+            </div>
             <div className="p-1.5 rounded-lg bg-destructive/10 text-destructive"><ShieldAlert className="h-4 w-4" /></div>
           </div>
           <div className="mt-4 flex items-center justify-between">
@@ -221,6 +360,11 @@ export default function DashboardClient({ stats, from, to, initialFilterType }: 
               View members dues <ArrowRight className="h-3 w-3" />
             </span>
           </div>
+          {activeTooltip === 'outstanding' && (
+            <div className="absolute top-16 left-5 right-5 z-40 bg-slate-800 text-white text-[10px] p-2.5 rounded-xl border border-slate-700 shadow-lg leading-normal animate-fade-in">
+              Grand total of all unpaid membership balances across the entire history.
+            </div>
+          )}
         </div>
       </div>
 

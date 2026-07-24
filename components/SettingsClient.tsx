@@ -414,132 +414,135 @@ export default function SettingsClient({ initialMe, initialDevices }: SettingsCl
       {/* ADD / EDIT DEVICE DIALOG MODAL */}
       {deviceModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
-          <div className="w-full max-w-md bg-white rounded-2xl border shadow-xl p-6 animate-fade-in-up">
-            <div className="flex items-center justify-between border-b pb-3 mb-4">
-              <h3 className="text-md font-bold text-foreground">
+          <div className="w-full max-w-2xl bg-white rounded-2xl border shadow-xl p-8 animate-fade-in-up">
+            <div className="flex items-center justify-between border-b pb-4 mb-6">
+              <h3 className="text-lg font-bold text-foreground">
                 {editingDevice ? 'Modify Biometric Device' : 'Register Biometric Device'}
               </h3>
               <button onClick={() => setDeviceModalOpen(false)} className="p-1 rounded hover:bg-muted text-muted-foreground cursor-pointer">
-                <X className="h-4.5 w-4.5" />
+                <X className="h-5 w-5" />
               </button>
             </div>
 
-            <form onSubmit={handleDeviceSubmit} className="space-y-4 text-xs font-medium">
-              <div>
-                <label className="text-[10px] font-bold text-muted-foreground uppercase block mb-1">Device Nickname *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Main Door Reader"
-                  value={deviceName}
-                  onChange={(e) => setDeviceName(e.target.value)}
-                  className="w-full rounded-xl border bg-background py-2 px-3 text-xs outline-none focus:border-primary"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
+            <form onSubmit={handleDeviceSubmit} className="space-y-6 text-sm font-medium">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase block mb-1">Local IP Address *</label>
+                  <label className="text-xs font-bold text-muted-foreground uppercase block mb-2">Device Nickname *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Main Door Reader"
+                    value={deviceName}
+                    onChange={(e) => setDeviceName(e.target.value)}
+                    className="w-full rounded-xl border bg-background py-3 px-4 text-sm outline-none focus:border-primary transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-muted-foreground uppercase block mb-2">Local IP Address *</label>
                   <input
                     type="text"
                     required
                     placeholder="192.168.1.201"
                     value={deviceIp}
                     onChange={(e) => setDeviceIp(e.target.value)}
-                    className="w-full rounded-xl border bg-background py-2 px-3 text-xs outline-none focus:border-primary"
+                    className="w-full rounded-xl border bg-background py-3 px-4 text-sm outline-none focus:border-primary transition-colors"
                   />
                 </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase block mb-1">Connection Port</label>
+                  <label className="text-xs font-bold text-muted-foreground uppercase block mb-2">Connection Port</label>
                   <input
                     type="number"
                     required
                     value={devicePort}
                     onChange={(e) => setDevicePort(parseInt(e.target.value, 10))}
-                    className="w-full rounded-xl border bg-background py-2 px-3 text-xs outline-none focus:border-primary"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase block mb-1">Device Password (optional)</label>
-                  <input
-                    type="password"
-                    value={devicePassword}
-                    onChange={(e) => setDevicePassword(e.target.value)}
-                    className="w-full rounded-xl border bg-background py-2 px-3 text-xs outline-none focus:border-primary"
+                    className="w-full rounded-xl border bg-background py-3 px-4 text-sm outline-none focus:border-primary transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase block mb-1">Device Serial Number *</label>
+                  <label className="text-xs font-bold text-muted-foreground uppercase block mb-2">Device Serial Number *</label>
                   <input
                     type="text"
                     required
                     placeholder="ZK123456789"
                     value={deviceSerial}
                     onChange={(e) => setDeviceSerial(e.target.value)}
-                    className="w-full rounded-xl border bg-background py-2 px-3 text-xs outline-none focus:border-primary"
+                    className="w-full rounded-xl border bg-background py-3 px-4 text-sm outline-none focus:border-primary transition-colors"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase block mb-1">Device Model</label>
+                  <label className="text-xs font-bold text-muted-foreground uppercase block mb-2">Device Password (optional)</label>
+                  <input
+                    type="password"
+                    value={devicePassword}
+                    onChange={(e) => setDevicePassword(e.target.value)}
+                    className="w-full rounded-xl border bg-background py-3 px-4 text-sm outline-none focus:border-primary transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-muted-foreground uppercase block mb-2">Device Model</label>
                   <input
                     type="text"
                     placeholder="ZK-iFace"
                     value={deviceModel}
                     onChange={(e) => setDeviceModel(e.target.value)}
-                    className="w-full rounded-xl border bg-background py-2 px-3 text-xs outline-none focus:border-primary"
+                    className="w-full rounded-xl border bg-background py-3 px-4 text-sm outline-none focus:border-primary transition-colors"
                   />
                 </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase block mb-1">Installation Location</label>
+                  <label className="text-xs font-bold text-muted-foreground uppercase block mb-2">Installation Location</label>
                   <input
                     type="text"
                     placeholder="Reception Entrance"
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
-                    className="w-full rounded-xl border bg-background py-2 px-3 text-xs outline-none focus:border-primary"
+                    className="w-full rounded-xl border bg-background py-3 px-4 text-sm outline-none focus:border-primary transition-colors"
                   />
+                </div>
+                <div className="flex flex-col justify-end">
+                  <div className="flex items-center justify-between bg-muted/40 p-4 rounded-xl border border-border/40 h-[50px]">
+                    <span className="text-xs font-bold text-muted-foreground uppercase">Enable Door Control Relay</span>
+                    <button
+                      type="button"
+                      onClick={() => setDoorControlEnabled(!doorControlEnabled)}
+                      className="cursor-pointer font-bold text-xs"
+                    >
+                      {doorControlEnabled ? (
+                        <span className="inline-flex px-3 py-1 rounded-full bg-success/15 text-success">YES</span>
+                      ) : (
+                        <span className="inline-flex px-3 py-1 rounded-full bg-muted text-muted-foreground">NO</span>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between bg-muted/40 p-3 rounded-xl">
-                <span className="text-[10px] font-bold text-muted-foreground uppercase">Enable Door Control Relay</span>
-                <button
-                  type="button"
-                  onClick={() => setDoorControlEnabled(!doorControlEnabled)}
-                  className="cursor-pointer font-bold text-[10px]"
-                >
-                  {doorControlEnabled ? (
-                    <span className="inline-flex px-2 py-0.5 rounded-full bg-success/15 text-success">YES</span>
-                  ) : (
-                    <span className="inline-flex px-2 py-0.5 rounded-full bg-muted text-muted-foreground">NO</span>
-                  )}
-                </button>
-              </div>
-
-              <div className="flex gap-3 justify-end border-t pt-4 mt-5">
+              <div className="flex gap-4 justify-end border-t pt-6 mt-6">
                 <button
                   type="button"
                   onClick={() => setDeviceModalOpen(false)}
-                  className="px-4 py-2.5 rounded-xl border text-xs font-semibold hover:bg-muted cursor-pointer"
+                  className="px-5 py-3 rounded-xl border text-sm font-semibold hover:bg-muted cursor-pointer transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex items-center gap-1.5 rounded-xl bg-primary py-2.5 px-6 text-xs font-bold text-primary-foreground hover:bg-primary/95 disabled:opacity-50 cursor-pointer"
+                  className="flex items-center gap-2 rounded-xl bg-primary py-3 px-6 text-sm font-bold text-primary-foreground hover:bg-primary/95 disabled:opacity-50 cursor-pointer transition-colors shadow-sm"
                 >
                   {loading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Loader2 className="h-4.5 w-4.5 animate-spin" />
                   ) : (
                     <>
-                      <Check className="h-4 w-4" />
+                      <Check className="h-4.5 w-4.5" />
                       Save Configuration
                     </>
                   )}

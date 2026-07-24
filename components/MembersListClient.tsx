@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, UserPlus, Phone, ArrowUpDown, ChevronRight, User } from 'lucide-react';
+import AddMemberModal from './AddMemberModal';
 
 interface MembersListClientProps {
   initialMembers: any[];
@@ -18,10 +19,27 @@ export default function MembersListClient({
   initialSortByDues,
 }: MembersListClientProps) {
   const router = useRouter();
-
+  const searchParams = useSearchParams();
   const [query, setQuery] = useState(initialQuery);
   const [statusFilter, setStatusFilter] = useState(initialStatus);
   const [sortByDues, setSortByDues] = useState(initialSortByDues);
+  const [addModalOpen, setAddModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (searchParams?.get('add') === 'true') {
+      setAddModalOpen(true);
+    }
+  }, [searchParams]);
+
+  const handleCloseModal = () => {
+    setAddModalOpen(false);
+    if (searchParams?.get('add') === 'true') {
+      const params = new URLSearchParams(window.location.search);
+      params.delete('add');
+      const queryStr = params.toString();
+      router.replace(`/members${queryStr ? '?' + queryStr : ''}`);
+    }
+  };
 
   // Trigger search params routing updates on filter changes
   const applyFilters = (q: string, s: string, dues: boolean) => {
@@ -55,7 +73,7 @@ export default function MembersListClient({
           <p className="text-xs text-muted-foreground">Manage gym members, access permissions, and billing ledger.</p>
         </div>
         <button
-          onClick={() => router.push('/members/new')}
+          onClick={() => setAddModalOpen(true)}
           className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary py-2.5 px-4 text-sm font-bold text-primary-foreground hover:bg-primary/95 transition-all duration-200 shadow-sm cursor-pointer shrink-0"
         >
           <UserPlus className="h-4.5 w-4.5" />
@@ -209,6 +227,8 @@ export default function MembersListClient({
           </div>
         </div>
       )}
+
+      <AddMemberModal isOpen={addModalOpen} onClose={handleCloseModal} />
     </div>
   );
 }

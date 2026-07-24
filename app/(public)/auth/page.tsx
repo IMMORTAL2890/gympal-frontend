@@ -63,7 +63,11 @@ export default function AuthPage() {
       // Save only accessToken and user info
       setTokens(data.accessToken, data.user);
       toast.success('Signed in with Google!');
-      router.replace('/dashboard');
+      if (data.user.role === 'ADMIN' || data.user.role === 'SUPER_ADMIN') {
+        router.replace('/ops-7f3k');
+      } else {
+        router.replace('/dashboard');
+      }
     } catch (err: any) {
       toast.error(getFriendlyErrorMessage(err));
     } finally {
@@ -107,7 +111,11 @@ export default function AuthPage() {
       // Save only accessToken and user info (removed refreshToken)
       setTokens(data.accessToken, data.user);
       toast.success(isLogin ? 'Welcome back!' : 'Account created and Gym setup successfully!');
-      router.replace('/dashboard');
+      if (data.user.role === 'ADMIN' || data.user.role === 'SUPER_ADMIN') {
+        router.replace('/ops-7f3k');
+      } else {
+        router.replace('/dashboard');
+      }
     } catch (err: any) {
       toast.error(getFriendlyErrorMessage(err));
     } finally {

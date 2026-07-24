@@ -139,12 +139,12 @@ export default function OwnerLayoutClient({ initialMe, initialAlerts, children }
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col lg:flex-row">
+    <div className="min-h-screen lg:h-screen lg:overflow-hidden bg-background text-foreground flex flex-col lg:flex-row">
 
 
       {/* 2. Desktop Sidebar */}
       <aside 
-        className={`hidden lg:flex flex-col bg-sidebar-bg text-sidebar-fg transition-all duration-250 z-20 shrink-0 border-r border-sidebar-accent/30 ${
+        className={`hidden lg:flex flex-col bg-sidebar-bg text-sidebar-fg transition-all duration-250 z-20 shrink-0 border-r border-sidebar-accent/30 h-screen sticky top-0 overflow-hidden ${
           sidebarCollapsed ? 'w-15' : 'w-55'
         }`}
       >
@@ -183,8 +183,8 @@ export default function OwnerLayoutClient({ initialMe, initialAlerts, children }
                 className={`flex items-center w-full gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 cursor-pointer ${
                   isActive 
                     ? 'bg-sidebar-accent text-white shadow-sm' 
-                    : 'hover:bg-sidebar-accent/50 hover:text-white/90 text-sidebar-fg/80'
-                } ${!active ? 'opacity-60 hover:opacity-80' : ''}`}
+                    : 'text-sidebar-fg/80'
+                } ${!active ? 'opacity-60' : ''}`}
               >
                 <Icon className="h-4.5 w-4.5 shrink-0" />
                 {!sidebarCollapsed && <span className="truncate">{item.label}</span>}
@@ -203,7 +203,7 @@ export default function OwnerLayoutClient({ initialMe, initialAlerts, children }
         <div className="p-3 border-t border-sidebar-accent/30">
           <button
             onClick={handleSignOut}
-            className="flex items-center w-full gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-sidebar-fg/70 hover:bg-sidebar-accent/40 hover:text-destructive transition-colors cursor-pointer"
+            className="flex items-center w-full gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-sidebar-fg/70 transition-colors cursor-pointer"
           >
             <LogOut className="h-4.5 w-4.5 shrink-0" />
             {!sidebarCollapsed && <span>Sign Out</span>}
@@ -271,7 +271,7 @@ export default function OwnerLayoutClient({ initialMe, initialAlerts, children }
                   router.push(item.path);
                 }}
                 className={`flex items-center w-full gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-colors ${
-                  isActive ? 'bg-sidebar-accent text-white' : 'text-sidebar-fg/80 hover:bg-sidebar-accent/30'
+                  isActive ? 'bg-sidebar-accent text-white' : 'text-sidebar-fg/80'
                 } ${!active ? 'opacity-60' : ''}`}
               >
                 <Icon className="h-4.5 w-4.5" />
@@ -290,7 +290,7 @@ export default function OwnerLayoutClient({ initialMe, initialAlerts, children }
               setMobileMenuOpen(false);
               handleSignOut();
             }}
-            className="flex items-center w-full gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-destructive/80 hover:bg-sidebar-accent/30 transition-colors"
+            className="flex items-center w-full gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-destructive/80 transition-colors"
           >
             <LogOut className="h-4.5 w-4.5" />
             <span>Sign Out</span>
@@ -299,7 +299,7 @@ export default function OwnerLayoutClient({ initialMe, initialAlerts, children }
       )}
 
       {/* 4. Desktop Top bar */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 lg:h-full lg:overflow-hidden">
         <header className="hidden lg:flex h-16 items-center justify-between border-b bg-white px-6 sticky top-0 z-10">
           <div className="flex flex-col">
             <span className="text-sm font-bold text-foreground">
@@ -340,7 +340,7 @@ export default function OwnerLayoutClient({ initialMe, initialAlerts, children }
         </header>
 
         {/* 5. Main content viewport */}
-        <main className="flex-1 overflow-y-auto px-4 py-6 md:px-6 md:py-8 safe-pb container mx-auto">
+        <main className="flex-1 overflow-y-auto px-4 pt-6 pb-24 md:px-6 md:py-8 lg:pb-8 container mx-auto">
           {isEnabled(pathname) ? (
             children
           ) : (

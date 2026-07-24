@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Calendar as CalendarIcon, Users, UserCheck, UserX, ChevronLeft, ChevronRight, HelpCircle, AlertTriangle, Clock, X, Info } from 'lucide-react';
@@ -67,63 +67,76 @@ export default function MonthlyAttendanceClient({
     updateUrl(memberId, newMonthStr);
   };
 
-  // 1. Calculations for the calendar grid
-  const [yearNum, monthNum] = currentMonth.split('-').map(Number);
-  const daysInMonth = new Date(yearNum, monthNum, 0).getDate();
-  // 0 = Sunday, 1 = Monday, etc.
-  const firstDayIndex = new Date(yearNum, monthNum - 1, 1).getDay();
+  const [yearNum, monthNum] = useMemo(() => {
+    return currentMonth.split('-').map(Number);
+  }, [currentMonth]);
 
-  // 2. Summary stats calculations
-  const todayStr = new Date().toISOString().split('T')[0];
-  const currentMonthToday = new Date();
-  const isCurrentMonth = currentMonthToday.getFullYear() === yearNum && (currentMonthToday.getMonth() + 1) === monthNum;
+  // 1. Memoized calendar grid cell data and indexes
+  const { daysInMonth, firstDayIndex, calendarCells } = useMemo(() => {
+    const dim = new Date(yearNum, monthNum, 0).getDate();
+    const fdi = new Date(yearNum, monthNum - 1, 1).getDay();
 
-  // Tracked days (up to today if current month, or all days of month if past month, or 0 if future month)
-  let trackedDays = daysInMonth;
-  if (isCurrentMonth) {
-    trackedDays = currentMonthToday.getDate();
-  } else if (new Date(yearNum, monthNum - 1, 1) > currentMonthToday) {
-    trackedDays = 0;
-  }
+    const cells = [];
+    for (let i = 0; i < fdi; i++) {
+      cells.push(null);
+    }
+    for (let d = 1; d <= dim; d++) {
+      cells.push(d);
+    }
 
-  const presentDays = initialData?.filter((d: any) => d.has_punch).length || 0;
-  // Absent days = tracked days minus days present (capped at 0)
-  const absentDays = Math.max(0, trackedDays - presentDays);
-  const attendanceRate = trackedDays > 0 ? Math.round((presentDays / trackedDays) * 100) : 0;
+    return { daysInMonth: dim, firstDayIndex: fdi, calendarCells: cells };
+  }, [yearNum, monthNum]);
 
-  // Average first in time calculation
-  let avgFirstInTime = '-';
-  const firstInLogs = initialData?.filter((d: any) => d.has_punch && d.first_in).map((d: any) => d.first_in) || [];
-  if (firstInLogs.length > 0) {
-    let totalSeconds = 0;
-    firstInLogs.forEach((timeStr: string) => {
-      const [h, m, s] = timeStr.split(':').map(Number);
-      totalSeconds += h * 3600 + m * 60 + (s || 0);
-    });
-    const avgSeconds = Math.floor(totalSeconds / firstInLogs.length);
-    const avgHour24 = Math.floor(avgSeconds / 3600);
-    const avgMinute = Math.floor((avgSeconds % 3600) / 60);
-    const ampm = avgHour24 >= 12 ? 'PM' : 'AM';
-    const avgHour12 = avgHour24 % 12 || 12;
-    avgFirstInTime = `${avgHour12}:${String(avgMinute).padStart(2, '0')} ${ampm}`;
-  }
+  // 2. Memoized summary stats calculations
+  const stats = useMemo(() => {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const currentMonthToday = new Date();
+    const isCurrentMonth = currentMonthToday.getFullYear() === yearNum && (currentMonthToday.getMonth() + 1) === monthNum;
+
+    let trackedDays = daysInMonth;
+    if (isCurrentMonth) {
+      trackedDays = currentMonthToday.getDate();
+    } else if (new Date(yearNum, monthNum - 1, 1) > currentMonthToday) {
+      trackedDays = 0;
+    }
+
+    const presentDays = initialData?.filter((d: any) => d.has_punch).length || 0;
+    const absentDays = Math.max(0, trackedDays - presentDays);
+    const attendanceRate = trackedDays > 0 ? Math.round((presentDays / trackedDays) * 100) : 0;
+
+    let avgFirstInTime = '-';
+    const firstInLogs = initialData?.filter((d: any) => d.has_punch && d.first_in).map((d: any) => d.first_in) || [];
+    if (firstInLogs.length > 0) {
+      let totalSeconds = 0;
+      firstInLogs.forEach((timeStr: string) => {
+        const [h, m, s] = timeStr.split(':').map(Number);
+        totalSeconds += h * 3600 + m * 60 + (s || 0);
+      });
+      const avgSeconds = Math.floor(totalSeconds / firstInLogs.length);
+      const avgHour24 = Math.floor(avgSeconds / 3600);
+      const avgMinute = Math.floor((avgSeconds % 3600) / 60);
+      const ampm = avgHour24 >= 12 ? 'PM' : 'AM';
+      const avgHour12 = avgHour24 % 12 || 12;
+      avgFirstInTime = `${avgHour12}:${String(avgMinute).padStart(2, '0')} ${ampm}`;
+    }
+
+    return {
+      trackedDays,
+      presentDays,
+      absentDays,
+      attendanceRate,
+      avgFirstInTime,
+      todayStr
+    };
+  }, [yearNum, monthNum, initialData, daysInMonth]);
+
+  const { trackedDays, presentDays, absentDays, attendanceRate, avgFirstInTime, todayStr } = stats;
 
   // Find single day stats helper
   const getDayData = (dayNum: number) => {
     const dateQuery = `${currentMonth}-${String(dayNum).padStart(2, '0')}`;
     return initialData?.find((d: any) => d.date === dateQuery);
   };
-
-  // Construct calendar grid list (including leading blanks)
-  const calendarCells = [];
-  // Add empty slots for first week padding
-  for (let i = 0; i < firstDayIndex; i++) {
-    calendarCells.push(null);
-  }
-  // Add days of the month
-  for (let d = 1; d <= daysInMonth; d++) {
-    calendarCells.push(d);
-  }
 
   const handleCellClick = (dayNum: number | null) => {
     if (!dayNum) return;
@@ -158,18 +171,18 @@ export default function MonthlyAttendanceClient({
           <h1 className="text-2xl font-bold text-foreground md:text-3xl">Monthly Attendance</h1>
           <p className="text-xs text-muted-foreground">Analyze individual member attendance patterns across the calendar month.</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-muted/40 border border-border w-fit shadow-sm">
           <Link
             href="/attendance"
-            className="inline-flex items-center justify-center gap-1.5 rounded-xl border bg-white text-foreground py-2.5 px-4 text-xs font-bold hover:bg-muted/40 cursor-pointer shadow-sm shrink-0"
+            className="px-4 py-2 rounded-lg text-xs font-bold text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all"
           >
             Daily View
           </Link>
           <button
-            className="inline-flex items-center justify-center gap-2 rounded-xl border bg-white text-muted-foreground py-2.5 px-4 text-xs font-bold cursor-not-allowed shadow-sm shrink-0 opacity-50"
             disabled
+            className="px-4 py-2 rounded-lg text-xs font-bold bg-white text-foreground border border-border/60 shadow-sm dark:bg-card"
           >
-            Monthly view
+            Monthly View
           </button>
         </div>
       </div>

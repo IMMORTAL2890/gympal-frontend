@@ -1,13 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Dumbbell, LogOut, ChevronRight, Users, Landmark, Calendar, BarChart3, TrendingUp, Sparkles, Award } from 'lucide-react';
+import { Dumbbell, LogOut, ChevronRight, Users, Landmark, Calendar, BarChart3, TrendingUp, Sparkles, Award, Trash2, AlertTriangle, X, Loader2 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, 
   Tooltip, ResponsiveContainer 
 } from 'recharts';
 import { clearTokens } from '@/lib/auth/auth-store';
+import { apiClient } from '@/lib/api/client';
 import { toast } from 'sonner';
 
 interface OpsDashboardClientProps {
@@ -18,11 +19,38 @@ interface OpsDashboardClientProps {
 export default function OpsDashboardClient({ initialGyms, dashboardStats }: OpsDashboardClientProps) {
   const router = useRouter();
   const [activeMenuTab, setActiveMenuTab] = useState<'dashboard' | 'gyms'>('dashboard');
+  const [gyms, setGyms] = useState<any[]>(initialGyms || []);
+  const [deleteTarget, setDeleteTarget] = useState<any | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  // Prefetch all gym detail pages on mount for fast navigation
+  useEffect(() => {
+    gyms.forEach((g) => {
+      router.prefetch(`/ops-7f3k/gyms/${g.gymId}`);
+    });
+    router.prefetch('/ops-7f3k/users');
+    router.prefetch('/ops-7f3k/revenue');
+  }, [gyms, router]);
 
   const handleLogout = () => {
     clearTokens();
     toast.success('Admin logged out');
     router.replace('/ops-7f3k/login');
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      await apiClient(`/admin/gyms/${deleteTarget.gymId}`, { method: 'DELETE' });
+      toast.success(`${deleteTarget.gymName} deleted successfully`);
+      setGyms((prev) => prev.filter((g) => g.gymId !== deleteTarget.gymId));
+      setDeleteTarget(null);
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to delete gym');
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const formatCurrency = (val: number) => {
@@ -31,10 +59,10 @@ export default function OpsDashboardClient({ initialGyms, dashboardStats }: OpsD
 
   // Safe fallback values
   const stats = dashboardStats || {
-    totalGymsRegistered: initialGyms?.length || 0,
+    totalGymsRegistered: gyms?.length || 0,
     gymsGrowthPct: 0.0,
-    totalActiveUsers: initialGyms?.reduce((s, g) => s + g.memberCount, 0) || 0,
-    totalRevenue: initialGyms?.reduce((s, g) => s + g.allTimeRevenue, 0) || 0,
+    totalActiveUsers: gyms?.reduce((s: number, g: any) => s + g.memberCount, 0) || 0,
+    totalRevenue: gyms?.reduce((s: number, g: any) => s + g.allTimeRevenue, 0) || 0,
     newSignupsThisMonthGyms: 0,
     newSignupsThisMonthUsers: 0,
     revenueTrend: [],
@@ -43,6 +71,60 @@ export default function OpsDashboardClient({ initialGyms, dashboardStats }: OpsD
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+      {/* Delete Confirmation Dialog */}
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
+          <div className="w-full max-w-md bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-2xl space-y-5">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-rose-500/15 border border-rose-500/30">
+                  <AlertTriangle className="h-5 w-5 text-rose-400" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-white">Delete Gym Permanently</h3>
+                  <p className="text-[10px] text-slate-400 mt-0.5">This action cannot be undone</p>
+                </div>
+              </div>
+              <button onClick={() => setDeleteTarget(null)} className="text-slate-500 hover:text-white cursor-pointer">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="bg-slate-900 border border-slate-700 rounded-xl p-4 space-y-1.5">
+              <div className="text-xs font-bold text-white">{deleteTarget.gymName}</div>
+              <div className="text-[10px] text-slate-400">Owner: {deleteTarget.ownerName}</div>
+              <div className="text-[10px] text-slate-400">{deleteTarget.memberCount} members · {formatCurrency(deleteTarget.allTimeRevenue)} revenue</div>
+            </div>
+
+            <p className="text-xs text-slate-300">
+              All data including <strong className="text-white">members, memberships, payments, attendance, and the owner account</strong> will be permanently erased.
+            </p>
+
+            <div className="flex gap-3 justify-end pt-1">
+              <button
+                onClick={() => setDeleteTarget(null)}
+                disabled={deleting}
+                className="px-4 py-2 rounded-xl border border-slate-600 text-xs font-bold text-slate-300 hover:text-white cursor-pointer transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteConfirm}
+                disabled={deleting}
+                className="flex items-center gap-2 px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-xs font-bold text-white cursor-pointer transition-colors disabled:opacity-50 shadow-sm"
+              >
+                {deleting ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Trash2 className="h-3.5 w-3.5" />
+                )}
+                Delete Permanently
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <header className="h-16 flex items-center justify-between border-b border-slate-800 bg-slate-900 px-6 sticky top-0 z-10">
         <div className="flex items-center gap-2">
@@ -218,16 +300,12 @@ export default function OpsDashboardClient({ initialGyms, dashboardStats }: OpsD
                     <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Total Members</th>
                     <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">All-Time Revenue</th>
                     <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider"></th>
+                    <th className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/60">
-                  {initialGyms?.map((g: any) => (
-                    <tr
-                      key={g.gymId}
-                      onClick={() => router.push(`/ops-7f3k/gyms/${g.gymId}`)}
-                      className="hover:bg-slate-800/30 transition-colors cursor-pointer"
-                    >
+                  {gyms.map((g: any) => (
+                    <tr key={g.gymId} className="hover:bg-slate-800/30 transition-colors">
                       <td className="px-6 py-4 font-bold text-white">{g.gymName}</td>
                       <td className="px-6 py-4">
                         <div className="font-semibold text-slate-300">{g.ownerName}</div>
@@ -249,11 +327,33 @@ export default function OpsDashboardClient({ initialGyms, dashboardStats }: OpsD
                           {g.status || 'active'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-right">
-                        <ChevronRight className="h-4 w-4 text-slate-400 inline-block" />
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => router.push(`/ops-7f3k/gyms/${g.gymId}`)}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 cursor-pointer transition-colors"
+                            title="View details"
+                          >
+                            <ChevronRight className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setDeleteTarget(g); }}
+                            className="p-1.5 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 cursor-pointer transition-colors"
+                            title="Delete gym"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
+                  {gyms.length === 0 && (
+                    <tr>
+                      <td colSpan={7} className="px-6 py-12 text-center text-xs text-slate-400 font-semibold">
+                        No gyms registered yet.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>

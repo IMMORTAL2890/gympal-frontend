@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Dumbbell, Phone, CheckCircle2, Loader2, LogOut } from 'lucide-react';
+import { Dumbbell, Phone, CheckCircle2, Loader2, LogOut, User, Building, Check, ArrowRight } from 'lucide-react';
 import { setupGymAction } from '@/app/actions';
 import { clearTokens } from '@/lib/auth/auth-store';
 import { apiClient } from '@/lib/api/client';
@@ -72,75 +72,116 @@ export default function SetupPage() {
 
   if (checking) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-success" />
+      <div className="flex min-h-screen items-center justify-center bg-slate-950">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-10 w-10 animate-spin text-success" />
+          <span className="text-xs text-slate-400 font-semibold tracking-wider uppercase animate-pulse">Verifying Session...</span>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8 overflow-hidden">
-      {/* Background decoration bubbles */}
-      <div className="absolute inset-0 z-0 opacity-5">
-        <div className="absolute w-72 h-72 rounded-full bg-success filter blur-3xl -top-20 -left-20 animate-float-bubble" />
-        <div className="absolute w-96 h-96 rounded-full bg-primary filter blur-3xl -bottom-30 -right-20 animate-float-bubble" style={{ animationDelay: '3s' }} />
+    <div className="relative flex min-h-screen items-center justify-center bg-slate-950 px-4 py-12 sm:px-6 lg:px-8 overflow-hidden">
+      {/* Premium ambient light background mesh */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden select-none">
+        <div className="absolute w-[600px] h-[600px] rounded-full bg-emerald-500/10 filter blur-[120px] -top-80 -left-60 animate-float-bubble" />
+        <div className="absolute w-[700px] h-[700px] rounded-full bg-indigo-500/10 filter blur-[150px] -bottom-90 -right-40 animate-float-bubble" style={{ animationDelay: '3s' }} />
+        <div className="absolute w-[400px] h-[400px] rounded-full bg-success/5 filter blur-[100px] top-1/2 left-1/3 animate-float-bubble" style={{ animationDelay: '6s' }} />
       </div>
 
-      <div className="z-10 w-full max-w-md space-y-6 bg-white p-8 rounded-2xl border shadow-sm dark:bg-slate-900 dark:border-slate-800">
-        <div className="flex flex-col items-center text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-success/15 border border-success/35">
-            <Dumbbell className="h-6 w-6 text-success animate-pulse-glow" />
+      {/* Main glass card wrapper container */}
+      <div className="z-10 w-full max-w-md bg-slate-900/60 dark:bg-slate-950/60 backdrop-blur-2xl p-8 rounded-[2.5rem] border border-slate-800/80 shadow-[0_0_80px_-15px_rgba(16,185,129,0.15)] transition-all duration-300 transform hover:scale-[1.01] animate-fade-in-up">
+        {/* Onboarding steps indicator progress */}
+        <div className="flex items-center justify-between mb-8 px-2">
+          <div className="flex items-center gap-1.5">
+            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-success/20 text-success text-[10px] font-bold border border-success/30">
+              <Check className="h-3 w-3" />
+            </div>
+            <span className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Account</span>
           </div>
-          <h2 className="mt-4 text-2xl font-bold text-foreground dark:text-white">Complete Gym Setup</h2>
-          <p className="mt-1.5 text-sm text-muted-foreground">
-            Set up your gym profile to begin tracking members.
+          <div className="flex-1 h-[2px] bg-success/30 mx-3 rounded" />
+          <div className="flex items-center gap-1.5">
+            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-success text-slate-950 text-[10px] font-bold shadow-[0_0_10px_rgba(34,197,94,0.4)]">
+              2
+            </div>
+            <span className="text-[10px] text-white font-bold uppercase tracking-wider">Gym Profile</span>
+          </div>
+          <div className="flex-1 h-[2px] bg-slate-800 mx-3 rounded" />
+          <div className="flex items-center gap-1.5">
+            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-800 text-slate-500 text-[10px] font-bold border border-slate-700/50">
+              3
+            </div>
+            <span className="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Dashboard</span>
+          </div>
+        </div>
+
+        {/* Brand visual header */}
+        <div className="flex flex-col items-center text-center">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-success/10 border border-success/25 shadow-[0_0_20px_rgba(34,197,94,0.15)] animate-pulse-glow">
+            <Dumbbell className="h-7 w-7 text-success" />
+          </div>
+          <h2 className="mt-5 text-2xl font-black text-white tracking-tight">Complete Gym Setup</h2>
+          <p className="mt-2 text-xs text-slate-400 font-medium max-w-[280px]">
+            Set up your professional gym management profile to start tracking your members today.
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-          <div>
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-1">
+        {/* Form elements */}
+        <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block pl-1">
               Gym Name
             </label>
-            <input
-              type="text"
-              required
-              placeholder="Iron Gym Central"
-              value={gymName}
-              onChange={(e) => setGymName(e.target.value)}
-              className="w-full rounded-xl border bg-background py-2.5 px-4 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all duration-200"
-            />
+            <div className="relative group">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                <Building className="h-4.5 w-4.5 text-slate-500 group-focus-within:text-success transition-colors" />
+              </div>
+              <input
+                type="text"
+                required
+                placeholder="e.g. Iron Gym Central"
+                value={gymName}
+                onChange={(e) => setGymName(e.target.value)}
+                className="w-full rounded-2xl border border-slate-800/80 bg-slate-900/40 py-3 pl-11 pr-4 text-sm text-white placeholder-slate-600 focus:border-success focus:ring-1 focus:ring-success outline-none transition-all duration-200"
+              />
+            </div>
           </div>
 
-          <div>
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-1">
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block pl-1">
               Owner Name
             </label>
-            <input
-              type="text"
-              required
-              placeholder="Arjun Sharma"
-              value={ownerName}
-              onChange={(e) => setOwnerName(e.target.value)}
-              className="w-full rounded-xl border bg-background py-2.5 px-4 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all duration-200"
-            />
+            <div className="relative group">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                <User className="h-4.5 w-4.5 text-slate-500 group-focus-within:text-success transition-colors" />
+              </div>
+              <input
+                type="text"
+                required
+                placeholder="e.g. Arjun Sharma"
+                value={ownerName}
+                onChange={(e) => setOwnerName(e.target.value)}
+                className="w-full rounded-2xl border border-slate-800/80 bg-slate-900/40 py-3 pl-11 pr-4 text-sm text-white placeholder-slate-600 focus:border-success focus:ring-1 focus:ring-success outline-none transition-all duration-200"
+              />
+            </div>
           </div>
 
-          <div>
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-1">
-              Mobile Number
+          <div className="space-y-1.5">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block pl-1">
+              Owner Mobile Number
             </label>
-            <div className="relative">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <Phone className="h-4 w-4 text-muted-foreground" />
+            <div className="relative group">
+              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                <Phone className="h-4.5 w-4.5 text-slate-500 group-focus-within:text-success transition-colors" />
               </div>
               <input
                 type="tel"
                 required
-                placeholder="9876543210"
+                placeholder="e.g. 9876543210"
                 value={mobile}
                 onChange={(e) => setMobile(e.target.value)}
-                className="w-full rounded-xl border bg-background py-2.5 pl-10 pr-4 text-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all duration-200"
+                className="w-full rounded-2xl border border-slate-800/80 bg-slate-900/40 py-3 pl-11 pr-4 text-sm text-white placeholder-slate-600 focus:border-success focus:ring-1 focus:ring-success outline-none transition-all duration-200"
               />
             </div>
           </div>
@@ -148,26 +189,26 @@ export default function SetupPage() {
           <button
             type="submit"
             disabled={loading}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-success py-3 px-4 text-sm font-bold text-success-foreground hover:bg-success/95 transition-all duration-200 shadow-sm disabled:opacity-50 cursor-pointer"
+            className="mt-2 flex w-full items-center justify-center gap-2 rounded-2xl bg-success py-3.5 px-4 text-sm font-bold text-slate-950 hover:bg-success/90 hover:scale-[1.01] active:scale-[0.99] transition-all duration-150 shadow-[0_4px_20px_rgba(34,197,94,0.3)] disabled:opacity-50 cursor-pointer"
           >
             {loading ? (
               <Loader2 className="h-4.5 w-4.5 animate-spin" />
             ) : (
               <>
-                <CheckCircle2 className="h-4.5 w-4.5" />
-                Save & Initialize Gym
+                <span>Save & Start Onboarding</span>
+                <ArrowRight className="h-4 w-4" />
               </>
             )}
           </button>
         </form>
 
-        <div className="border-t pt-4 text-center">
+        <div className="border-t border-slate-800/60 mt-6 pt-5 text-center">
           <button
             onClick={handleSignOut}
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
+            className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-rose-400 transition-colors cursor-pointer"
           >
-            <LogOut className="h-4 w-4" />
-            Sign Out
+            <LogOut className="h-3.5 w-3.5" />
+            <span>Sign Out & Exit Setup</span>
           </button>
         </div>
       </div>

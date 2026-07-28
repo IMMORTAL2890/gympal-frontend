@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link';
 import { 
   Dumbbell, LayoutDashboard, Users, ClipboardList, 
   Receipt, Clock, Bell, Settings, LogOut, Menu, 
@@ -44,9 +45,11 @@ export default function OwnerLayoutClient({ initialMe, initialAlerts, children }
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [mounted, setMounted] = useState(false);
 
   // Theme Sync on Mount
   useEffect(() => {
+    setMounted(true);
     const savedTheme = localStorage.getItem('fittrack:theme') || 'light';
     console.log("[FitTrack Theme] Initializing theme on mount:", savedTheme);
     setTheme(savedTheme as 'light' | 'dark');
@@ -123,6 +126,17 @@ export default function OwnerLayoutClient({ initialMe, initialAlerts, children }
     return () => clearInterval(interval);
   }, [initialMe]);
 
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-sidebar-bg flex flex-col items-center justify-center gap-4">
+        <Loader2 className="h-10 w-10 animate-spin text-success" />
+        <span className="text-xs text-sidebar-fg/60 font-semibold tracking-wider uppercase animate-pulse">
+          Loading Dashboard...
+        </span>
+      </div>
+    );
+  }
+
 
 
   const handleSignOut = () => {
@@ -177,9 +191,9 @@ export default function OwnerLayoutClient({ initialMe, initialAlerts, children }
             const Icon = item.icon;
             const active = isEnabled(item.path);
             return (
-              <button
+              <Link
                 key={item.path}
-                onClick={() => router.push(item.path)}
+                href={item.path}
                 className={`flex items-center w-full gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150 cursor-pointer ${
                   isActive 
                     ? 'bg-sidebar-accent text-white shadow-sm' 
@@ -194,7 +208,7 @@ export default function OwnerLayoutClient({ initialMe, initialAlerts, children }
                     {totalAlerts}
                   </span>
                 )}
-              </button>
+              </Link>
             );
           })}
         </nav>
@@ -233,8 +247,8 @@ export default function OwnerLayoutClient({ initialMe, initialAlerts, children }
           </button>
 
           {/* Mobile Alerts Bell */}
-          <button 
-            onClick={() => router.push('/alerts')}
+          <Link 
+            href="/alerts"
             className="relative p-1.5 rounded-lg hover:bg-sidebar-accent transition-colors"
           >
             <Bell className="h-4.5 w-4.5 text-sidebar-fg" />
@@ -243,7 +257,7 @@ export default function OwnerLayoutClient({ initialMe, initialAlerts, children }
                 {totalAlerts}
               </span>
             )}
-          </button>
+          </Link>
 
           {/* Hamburger Menu Toggle */}
           <button
@@ -264,11 +278,11 @@ export default function OwnerLayoutClient({ initialMe, initialAlerts, children }
             const Icon = item.icon;
             const active = isEnabled(item.path);
             return (
-              <button
+              <Link
                 key={item.path}
+                href={item.path}
                 onClick={() => {
                   setMobileMenuOpen(false);
-                  router.push(item.path);
                 }}
                 className={`flex items-center w-full gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-colors ${
                   isActive ? 'bg-sidebar-accent text-white' : 'text-sidebar-fg/80'
@@ -282,7 +296,7 @@ export default function OwnerLayoutClient({ initialMe, initialAlerts, children }
                     {totalAlerts}
                   </span>
                 )}
-              </button>
+              </Link>
             );
           })}
           <button
@@ -325,8 +339,8 @@ export default function OwnerLayoutClient({ initialMe, initialAlerts, children }
             </button>
 
             {/* Desktop Alerts Bell Button */}
-            <button
-              onClick={() => router.push('/alerts')}
+            <Link
+              href="/alerts"
               className="relative p-2 rounded-full hover:bg-muted transition-colors cursor-pointer"
             >
               <Bell className="h-5 w-5 text-muted-foreground hover:text-foreground" />
@@ -335,12 +349,12 @@ export default function OwnerLayoutClient({ initialMe, initialAlerts, children }
                   {totalAlerts}
                 </span>
               )}
-            </button>
+            </Link>
           </div>
         </header>
 
         {/* 5. Main content viewport */}
-        <main className="flex-1 overflow-y-auto px-4 pt-6 pb-24 md:px-6 md:py-8 lg:pb-8 container mx-auto">
+        <main className="flex-1 overflow-y-auto px-4 pt-6 pb-28 md:px-6 md:pt-8 md:pb-28 lg:pb-8 container mx-auto">
           {isEnabled(pathname) ? (
             children
           ) : (
@@ -363,9 +377,9 @@ export default function OwnerLayoutClient({ initialMe, initialAlerts, children }
             const Icon = item.icon;
             const active = isEnabled(item.path);
             return (
-              <button
+              <Link
                 key={item.path}
-                onClick={() => router.push(item.path)}
+                href={item.path}
                 className={`flex flex-col items-center justify-center flex-1 h-full gap-0.5 text-[9px] xs:text-[10px] cursor-pointer ${
                   isActive ? 'text-success' : 'text-sidebar-fg/60 hover:text-sidebar-fg/80'
                 } ${!active ? 'opacity-65' : ''}`}
@@ -384,7 +398,7 @@ export default function OwnerLayoutClient({ initialMe, initialAlerts, children }
                   )}
                 </div>
                 <span className="truncate max-w-[50px]">{item.label}</span>
-              </button>
+              </Link>
             );
           })}
         </nav>

@@ -4,8 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   Settings, Save, Cpu, Plus, Edit3, Trash2, 
-  X, Check, Loader2, Key, HelpCircle, Activity, 
-  Database, Network, Server, Wifi
+  X, Check, Loader2, Key, HelpCircle
 } from 'lucide-react';
 import { 
   updateGymProfileAction, 
@@ -328,8 +327,8 @@ export default function SettingsClient({ initialMe, initialDevices }: SettingsCl
         </div>
       </div>
 
-      {/* 3. Guide & Diagnostics Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+      {/* 3. Guide Section */}
+      <div className="mt-8">
         {/* Biometric Integration Guide */}
         <div className="bg-white border rounded-2xl p-6 shadow-sm space-y-4">
           <div className="flex items-center gap-2 border-b pb-3">
@@ -375,38 +374,6 @@ export default function SettingsClient({ initialMe, initialDevices }: SettingsCl
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Diagnostics & Health Status */}
-        <div className="bg-white border rounded-2xl p-6 shadow-sm space-y-4">
-          <div className="flex items-center gap-2 border-b pb-3">
-            <Activity className="h-4.5 w-4.5 text-primary" />
-            <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">System Diagnostics</h3>
-          </div>
-
-          <div className="divide-y text-xs font-semibold text-muted-foreground">
-            <div className="flex items-center justify-between py-2.5">
-              <span className="flex items-center gap-1.5"><Database className="h-4 w-4 text-primary" /> Database Driver</span>
-              <span className="text-foreground font-bold">PostgreSQL v16 (HikariPool-1)</span>
-            </div>
-            <div className="flex items-center justify-between py-2.5">
-              <span className="flex items-center gap-1.5"><Server className="h-4 w-4 text-primary" /> App Host Engine</span>
-              <span className="text-foreground font-bold">Spring Boot 3.3.1 (JVM Java 21)</span>
-            </div>
-            <div className="flex items-center justify-between py-2.5">
-              <span className="flex items-center gap-1.5"><Network className="h-4 w-4 text-primary" /> Schema Migrations</span>
-              <span className="inline-flex px-2 py-0.5 rounded-full bg-success/15 text-success text-[10px] font-bold">FLYWAY V2 (OK)</span>
-            </div>
-            <div className="flex items-center justify-between py-2.5">
-              <span className="flex items-center gap-1.5"><Wifi className="h-4 w-4 text-primary" /> API Handshake Status</span>
-              <span className="inline-flex px-2 py-0.5 rounded-full bg-success/15 text-success text-[10px] font-bold">200 OK</span>
-            </div>
-          </div>
-          
-          <div className="bg-primary/5 border border-primary/20 rounded-xl p-3.5 mt-2 flex flex-col justify-center text-[10px] font-bold text-primary leading-relaxed">
-            <div>Live Network Polling Status:</div>
-            <div className="text-muted-foreground font-medium mt-1">Biometric polling worker service is listening on port 4370 and syncing logs from registered hardware.</div>
           </div>
         </div>
       </div>

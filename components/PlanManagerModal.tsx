@@ -15,33 +15,34 @@ interface PlanManagerModalProps {
 const PLANS = [
   {
     id: 'FREE',
-    name: 'Free Tier',
-    description: 'Basic gym setup with member management and manual check-ins.',
+    name: 'FREE Plan (Default)',
+    description: 'Default tier for new signups. Includes Member & Plan Management.',
     color: 'border-slate-700 bg-slate-800/60 text-slate-300',
     badgeBg: 'bg-slate-500/20 text-slate-300 border-slate-500/30',
     icon: Shield,
-    features: ['Member Management', 'Manual Attendance'],
+    features: ['Member & Plan Management'],
   },
   {
     id: 'BASIC',
-    name: 'Basic Plan',
-    description: 'Includes automated SMS/WhatsApp alerts and QR check-ins.',
+    name: 'BASIC Plan',
+    description: 'Unlocks Attendance logs and Online Payment tracking.',
     color: 'border-cyan-500/40 bg-cyan-950/20 text-cyan-200',
     badgeBg: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
     icon: Zap,
-    features: ['Member Management', 'QR & Manual Check-in', 'SMS & WhatsApp Alerts'],
+    features: ['Member & Plan Management', 'Attendance Logs', 'Online Payment Tracking'],
   },
   {
     id: 'PREMIUM',
-    name: 'Premium Plan',
-    description: 'Full feature access including LAN Biometric LAN readers & ADMS push sync.',
+    name: 'PREMIUM Plan',
+    description: 'Unlocks SMS/WhatsApp alerts, Biometric LAN devices, and ADMS Direct Sync.',
     color: 'border-emerald-500/50 bg-emerald-950/30 text-emerald-200',
     badgeBg: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
     icon: Sparkles,
     features: [
-      'All Basic Features',
-      'Online Payments & Reports',
-      'Biometric LAN & ADMS Sync',
+      'Member & Plan Management',
+      'Attendance Logs & Online Payments',
+      'SMS / WhatsApp Alerts',
+      'Biometric LAN Devices & ADMS Push Sync',
     ],
   },
 ];
@@ -60,9 +61,13 @@ export default function PlanManagerModal({ gym, isOpen, onClose, onSuccess }: Pl
       const gymId = gym.id || gym.gymId;
       await apiClient(`/admin/gyms/${gymId}/plan`, {
         method: 'PATCH',
-        body: JSON.stringify({ subscription_plan: selectedPlan }),
+        body: JSON.stringify({ 
+          subscription_plan: selectedPlan,
+          subscriptionPlan: selectedPlan,
+          plan: selectedPlan 
+        }),
       });
-      toast.success(`Updated ${gym.gym_name || gym.gymName} subscription plan to ${selectedPlan}`);
+      toast.success(`Updated ${gym.gym_name || gym.gymName} plan to ${selectedPlan}`);
       onSuccess({
         ...gym,
         subscription_plan: selectedPlan,
@@ -79,14 +84,14 @@ export default function PlanManagerModal({ gym, isOpen, onClose, onSuccess }: Pl
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-200">
       <div className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl space-y-6 relative overflow-hidden">
-        {/* Glow effect header */}
+        {/* Top Gradient Bar */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-violet-500 to-cyan-500" />
 
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold text-white tracking-tight">Change Subscription Plan</h2>
             <p className="text-xs text-slate-400 mt-1">
-              Updating plan for <strong className="text-slate-200">{gym.gym_name || gym.gymName}</strong> ({gym.owner_name || gym.ownerName})
+              Modifying tier for <strong className="text-slate-200">{gym.gym_name || gym.gymName}</strong> ({gym.owner_name || gym.ownerName})
             </p>
           </div>
           <button
@@ -97,7 +102,7 @@ export default function PlanManagerModal({ gym, isOpen, onClose, onSuccess }: Pl
           </button>
         </div>
 
-        {/* Plan selection cards */}
+        {/* Plan Cards */}
         <div className="space-y-3">
           {PLANS.map((plan) => {
             const Icon = plan.icon;
@@ -123,7 +128,7 @@ export default function PlanManagerModal({ gym, isOpen, onClose, onSuccess }: Pl
                   <div className="flex items-center justify-between">
                     <span className="font-semibold text-white text-sm">{plan.name}</span>
                     {isSelected && (
-                      <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+                      <span className="flex items-center gap-1 text-[11px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">
                         <Check className="h-3.5 w-3.5" /> Selected
                       </span>
                     )}
@@ -131,7 +136,7 @@ export default function PlanManagerModal({ gym, isOpen, onClose, onSuccess }: Pl
                   <p className="text-xs text-slate-400">{plan.description}</p>
                   <div className="flex flex-wrap gap-1.5 pt-1.5">
                     {plan.features.map((f, idx) => (
-                      <span key={idx} className="text-[10px] bg-slate-800/80 text-slate-300 px-2 py-0.5 rounded-md border border-slate-700/50">
+                      <span key={idx} className="text-[10px] bg-slate-800/90 text-slate-300 px-2 py-0.5 rounded-md border border-slate-700/60 font-medium">
                         {f}
                       </span>
                     ))}
@@ -142,7 +147,7 @@ export default function PlanManagerModal({ gym, isOpen, onClose, onSuccess }: Pl
           })}
         </div>
 
-        {/* Action Buttons */}
+        {/* Footer Controls */}
         <div className="flex items-center justify-end gap-3 pt-2 border-t border-slate-800">
           <button
             onClick={onClose}
@@ -160,7 +165,7 @@ export default function PlanManagerModal({ gym, isOpen, onClose, onSuccess }: Pl
                 <Loader2 className="h-4 w-4 animate-spin" /> Saving Plan...
               </>
             ) : (
-              'Confirm Plan Change'
+              'Confirm Plan Upgrade'
             )}
           </button>
         </div>

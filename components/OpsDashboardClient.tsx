@@ -514,56 +514,96 @@ export default function OpsDashboardClient({ initialGyms, dashboardStats }: OpsD
             {/* Interactive Data Table */}
             <div className="rounded-3xl border border-slate-800 bg-slate-900/80 overflow-hidden backdrop-blur-xl shadow-2xl">
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full text-left text-xs border-collapse">
                   <thead className="bg-slate-950/80 text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-800">
                     <tr>
                       <th className="px-6 py-4">Gym & Owner Name</th>
-                      <th className="px-6 py-4">Mobile Contact</th>
-                      <th className="px-6 py-4">Subscription Plan</th>
-                      <th className="px-6 py-4 text-center">Account Status</th>
-                      <th className="px-6 py-4 text-right">Action Controls</th>
+                      <th className="px-6 py-4">Contact & Hardware</th>
+                      <th className="px-6 py-4">Plan Tier & Features</th>
+                      <th className="px-6 py-4">Members & Revenue</th>
+                      <th className="px-6 py-4 text-center">Status</th>
+                      <th className="px-6 py-4 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800/60 text-slate-300">
                     {filteredGyms.length === 0 ? (
                       <tr>
-                        <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
+                        <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
                           No gym records found matching your search.
                         </td>
                       </tr>
                     ) : (
                       filteredGyms.map((g: any) => {
                         const gymId = g.id || g.gymId;
+                        const gymName = g.gym_name || g.gymName || 'Gym';
+                        const ownerName = g.owner_name || g.ownerName || 'N/A';
+                        const mobile = g.mobile_number || g.mobileNumber || 'N/A';
                         const plan = (g.subscription_plan || g.subscriptionPlan || 'FREE').toUpperCase();
                         const isSuspended = g.status === 'suspended';
                         const isTogglingStatus = togglingStatusId === gymId;
+                        const memberCount = g.memberCount || g.totalMembers || 0;
+                        const revenue = g.allTimeRevenue || g.totalRevenue || 0;
+                        const devicesCount = g.active_devices_count || g.devicesCount || 1;
 
                         return (
                           <tr key={gymId} className="hover:bg-slate-800/40 transition-colors">
+                            {/* Gym & Owner Name */}
                             <td className="px-6 py-4">
-                              <div className="font-bold text-white text-sm">{g.gym_name || g.gymName}</div>
-                              <div className="text-xs text-slate-400 mt-0.5">Owner: {g.owner_name || g.ownerName}</div>
+                              <div className="font-bold text-white text-sm">{gymName}</div>
+                              <div className="text-xs text-slate-400 mt-0.5">Owner: <strong className="text-slate-200">{ownerName}</strong></div>
+                              <div className="text-[10px] text-slate-500 font-mono mt-0.5">ID: {gymId.slice(0, 8)}...</div>
                             </td>
-                            <td className="px-6 py-4 font-mono text-slate-300">
-                              {g.mobile_number || g.mobileNumber}
+
+                            {/* Contact & Hardware */}
+                            <td className="px-6 py-4">
+                              <div className="font-mono text-slate-200 text-xs font-semibold">{mobile}</div>
+                              <div className="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
+                                <Cpu className="h-3 w-3 text-violet-400" />
+                                <span>{devicesCount} LAN / ADMS device(s)</span>
+                              </div>
                             </td>
+
+                            {/* Subscription Plan & Unlocked Features */}
                             <td className="px-6 py-4">
                               {plan === 'PREMIUM' && (
-                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-extrabold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-sm shadow-emerald-500/10">
-                                  <Sparkles className="h-3 w-3" /> PREMIUM
-                                </span>
+                                <div className="space-y-1">
+                                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-extrabold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-sm shadow-emerald-500/10">
+                                    <Sparkles className="h-3 w-3" /> PREMIUM
+                                  </span>
+                                  <div className="text-[10px] text-emerald-400/90 font-medium">
+                                    Full Access: SMS/WhatsApp + ADMS Sync
+                                  </div>
+                                </div>
                               )}
                               {plan === 'BASIC' && (
-                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-extrabold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
-                                  <Zap className="h-3 w-3" /> BASIC
-                                </span>
+                                <div className="space-y-1">
+                                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-extrabold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+                                    <Zap className="h-3 w-3" /> BASIC
+                                  </span>
+                                  <div className="text-[10px] text-cyan-300/90 font-medium">
+                                    Unlocks Attendance Logs & Online Payments
+                                  </div>
+                                </div>
                               )}
                               {plan === 'FREE' && (
-                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-extrabold bg-slate-800 text-slate-300 border border-slate-700">
-                                  <Shield className="h-3 w-3 text-slate-400" /> FREE
-                                </span>
+                                <div className="space-y-1">
+                                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-extrabold bg-slate-800 text-slate-300 border border-slate-700">
+                                    <Shield className="h-3 w-3 text-slate-400" /> FREE
+                                  </span>
+                                  <div className="text-[10px] text-slate-400 font-medium">
+                                    Member & Plan Management Only
+                                  </div>
+                                </div>
                               )}
                             </td>
+
+                            {/* Members & Revenue */}
+                            <td className="px-6 py-4">
+                              <div className="font-bold text-white text-xs">{memberCount} members</div>
+                              <div className="font-bold text-emerald-400 text-xs mt-0.5">{formatCurrency(revenue)}</div>
+                            </td>
+
+                            {/* Account Status */}
                             <td className="px-6 py-4 text-center">
                               <span
                                 className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase ${
@@ -583,13 +623,24 @@ export default function OpsDashboardClient({ initialGyms, dashboardStats }: OpsD
                                 )}
                               </span>
                             </td>
+
+                            {/* Actions */}
                             <td className="px-6 py-4 text-right">
-                              <div className="flex items-center justify-end gap-2">
+                              <div className="flex items-center justify-end gap-1.5">
+                                {/* View Full Details Button */}
+                                <button
+                                  onClick={() => router.push(`/ops-7f3k/gyms/${gymId}`)}
+                                  className="p-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                                  title="View full gym overview, members & revenue"
+                                >
+                                  <ChevronRight className="h-4 w-4" />
+                                </button>
+
                                 {/* Feature Toggles Button */}
                                 <button
                                   onClick={() => setSelectedGymForFeatures(g)}
-                                  className="px-3 py-1.5 rounded-xl bg-violet-500/10 hover:bg-violet-500/20 text-violet-300 border border-violet-500/30 font-semibold text-xs flex items-center gap-1.5 transition-all cursor-pointer"
-                                  title="Manage 5 feature flag overrides"
+                                  className="px-2.5 py-1.5 rounded-xl bg-violet-500/10 hover:bg-violet-500/20 text-violet-300 border border-violet-500/30 font-semibold text-xs flex items-center gap-1 transition-all cursor-pointer"
+                                  title="Manage feature flag overrides"
                                 >
                                   <Sliders className="h-3.5 w-3.5" /> Features
                                 </button>
@@ -597,7 +648,7 @@ export default function OpsDashboardClient({ initialGyms, dashboardStats }: OpsD
                                 {/* Change Plan Button */}
                                 <button
                                   onClick={() => setSelectedGymForPlan(g)}
-                                  className="px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold text-xs flex items-center gap-1.5 transition-all cursor-pointer"
+                                  className="px-2.5 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold text-xs flex items-center gap-1 transition-all cursor-pointer"
                                   title="Change subscription plan tier"
                                 >
                                   <Sparkles className="h-3.5 w-3.5" /> Plan

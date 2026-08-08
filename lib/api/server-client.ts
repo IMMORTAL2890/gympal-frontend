@@ -1,6 +1,6 @@
 import { getServerTokens, setServerTokens, clearServerTokens } from '../auth/session';
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8081/api/v1';
+const BASE_URL = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8081/api/v1';
 
 interface FetchOptions extends RequestInit {
   headers?: Record<string, string>;

@@ -18,6 +18,8 @@ export default function AuthPage() {
   const [ownerName, setOwnerName] = useState('');
   const [mobile, setMobile] = useState('');
   const [loading, setLoading] = useState(false);
+  // Google Login is commented out
+  /*
   const [googleLoading, setGoogleLoading] = useState(false);
   const googleBtnRef = useRef<HTMLDivElement>(null);
 
@@ -31,7 +33,7 @@ export default function AuthPage() {
 
     script.onload = () => {
       const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '788482819875-1u9o327vbeab0ncl0h7346u9e3k5a2u7.apps.googleusercontent.com';
-      
+
       if (typeof window !== 'undefined' && (window as any).google) {
         (window as any).google.accounts.id.initialize({
           client_id: clientId,
@@ -75,6 +77,7 @@ export default function AuthPage() {
       setGoogleLoading(false);
     }
   };
+  */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,8 +103,8 @@ export default function AuthPage() {
 
     setLoading(true);
     const endpoint = isLogin ? '/auth/login' : '/auth/signup';
-    const requestBody = isLogin 
-      ? { email, password } 
+    const requestBody = isLogin
+      ? { email, password }
       : { email, password, gymName, ownerName, mobile };
 
     try {
@@ -286,6 +289,7 @@ export default function AuthPage() {
           </button>
         </form>
 
+        {/* Google Login is commented out
         <div className="relative flex items-center justify-center my-6">
           <div className="absolute w-full border-t border-border" />
           <span className="relative bg-white px-3 text-xs text-muted-foreground font-semibold uppercase tracking-wider">
@@ -294,6 +298,7 @@ export default function AuthPage() {
         </div>
 
         <div className="w-full flex justify-center min-h-[46px]" ref={googleBtnRef} />
+        */}
 
         <div className="text-center text-sm">
           <button

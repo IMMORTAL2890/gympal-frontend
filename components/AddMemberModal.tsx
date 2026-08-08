@@ -68,7 +68,7 @@ export default function AddMemberModal({ isOpen, onClose }: AddMemberModalProps)
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
-      <div className="w-full max-w-2xl bg-white rounded-2xl border shadow-xl p-6 md:p-8 animate-fade-in-up max-h-[90vh] flex flex-col">
+      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-6 md:p-8 animate-fade-in-up max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between border-b pb-4 mb-6 shrink-0">
           <div>
